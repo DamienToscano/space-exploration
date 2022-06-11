@@ -8,7 +8,7 @@ import Camera from './Camera.js'
 import Renderer from './Renderer.js'
 import World from './World/World.js'
 import Resources from './Utils/Resources.js'
-
+import Loader from './World/Loader.js'
 import sources from './sources.js'
 
 let instance = null
@@ -37,7 +37,8 @@ export default class Experience
         this.object = new Object()
         this.scene = new THREE.Scene()
         this.sources = sources
-        this.resources = new Resources(this.sources)
+        this.loader = new Loader()
+        this.resources = new Resources(this.sources, this.loader.getLoadingManager())
         this.camera = new Camera()
         this.renderer = new Renderer()
         this.world = new World()
