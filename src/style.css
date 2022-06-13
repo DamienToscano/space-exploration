@@ -36,10 +36,31 @@ body {
     border: 2px solid #65FFDA;
     border-radius: 4px;
     font-weight: bold;
+    cursor: progress;
+    transition: all 0.2s ease-in-out;
+}
+
+.launch-button span {
+    transition: all 0.5s ease-in-out;
+}
+
+.launch-button.ready {
+    background: #65FFDA;
+    color: #0B1A30;
+}
+
+.launch-button.ready:hover {
+    margin-left: 20px;
+}
+
+
+
+/* Pour l'animation, changer la couleur lettre par lettre en JS selon la progression */
+
+.inactive {
     color: #0E2241;
 }
 
-/* Pour l'animation, changer la couleur lettre par lettre en JS selon la progression */
 
 .copyright {
     position: fixed;
