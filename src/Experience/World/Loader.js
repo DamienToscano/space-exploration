@@ -89,5 +89,7 @@ export default class Loader {
     destroy() {
         // Remove .loader from DOM
         this.loaderContainer.remove()
+        // Remove event listener
+        this.launchButton.removeEventListener('click', this.removeLoader.bind(this))
     }
 }

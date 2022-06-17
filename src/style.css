@@ -68,3 +68,16 @@ body {
     right: 20px;
     z-index: 200;
 }
+
+.copyright a {
+    color: #65FFDA;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.copyright a:hover {
+    background-color: #65FFDA;
+    color: #0B1A30;
+    text-decoration: none;
+}
