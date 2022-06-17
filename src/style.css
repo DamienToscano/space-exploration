@@ -1,19 +1,83 @@
-*
-{
+* {
     margin: 0;
     padding: 0;
 }
 
 html,
-body
-{
+body {
     overflow: hidden;
+    color: #65FFDA;
+    font-family: 'Roboto Mono', monospace;
 }
 
-.webgl
-{
+.webgl {
     position: fixed;
     top: 0;
     left: 0;
     outline: none;
+}
+
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0B1A30;
+    z-index: 100;
+    transition: all 0.5s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.launch-button {
+    padding: 15px 30px;
+    border: 2px solid #65FFDA;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: progress;
+    transition: all 0.2s ease-in-out;
+}
+
+.launch-button span {
+    transition: all 0.5s ease-in-out;
+}
+
+.launch-button.ready {
+    background: #65FFDA;
+    color: #0B1A30;
+}
+
+.launch-button.ready:hover {
+    margin-left: 20px;
+}
+
+
+
+/* Pour l'animation, changer la couleur lettre par lettre en JS selon la progression */
+
+.inactive {
+    color: #0E2241;
+}
+
+
+.copyright {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 200;
+}
+
+.copyright a {
+    color: #65FFDA;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.copyright a:hover {
+    background-color: #65FFDA;
+    color: #0B1A30;
+    text-decoration: none;
 }
