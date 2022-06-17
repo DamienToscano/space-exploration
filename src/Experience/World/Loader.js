@@ -9,12 +9,7 @@ export default class Loader {
         this.launchButton = document.querySelector('.launch-button')
         this.copyright = document.querySelector('.copyright')
 
-        this.setOverlay()
         this.setLoadingManager()
-    }
-
-    setOverlay() {
-        // Add fix full page div to loader class
     }
 
     setLoadingManager() {
