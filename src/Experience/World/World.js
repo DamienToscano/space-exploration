@@ -1,6 +1,7 @@
 import Experience from '../Experience.js'
-import Environment from "./Environment.js";
-import Galaxy from './Galaxy.js';
+import Environment from "./Environment.js"
+import Galaxy from './Galaxy.js'
+import Spaceship from './Spaceship.js'
 
 export default class World {
     constructor() {
@@ -19,6 +20,7 @@ export default class World {
             this.resources.on('ready', () => {
                 this.environment = new Environment()
                 this.createGalaxies()
+                this.spaceship = new Spaceship()
             })
         }
     }
