@@ -15,7 +15,7 @@ export default class Spaceship {
         turboMode: false,
         turboAllowed: true,
         mass: 2,
-        position : {x: 0, y: 4, z: 0},
+        position : {x: 0, y: 0, z: 0},
     }
 
     constructor() {
@@ -30,9 +30,6 @@ export default class Spaceship {
             this.debugFolder = this.debug.ui.addFolder('Stars')
         }
         
-        console.log('Spaceship entering the game')
-        console.log(this.physics)
-
         this.setSpaceship()
         this.setPhysics()
 
@@ -55,10 +52,10 @@ export default class Spaceship {
     }
 
     setMesh() {
-        this.spaceship = new THREE.Mesh(this.geometry, this.mesh)
-        this.spaceship.scale.set(this.parameters.width, this.parameters.height, this.parameters.depth)
-        this.spaceship.position.copy(this.parameters.position)
-        this.scene.add(this.spaceship)
+        this.mesh = new THREE.Mesh(this.geometry, this.mesh)
+        this.mesh.scale.set(this.parameters.width, this.parameters.height, this.parameters.depth)
+        this.mesh.position.copy(this.parameters.position)
+        this.scene.add(this.mesh)
     }
 
     setPhysics() {
@@ -80,15 +77,26 @@ export default class Spaceship {
         // For boxes in cannon, we have to divide the dimensions by 2
         const shape = new CANNON.Box(new CANNON.Vec3(this.parameters.width / 2, this.parameters.height / 2, this.parameters.depth / 2))
 
-        const body = new CANNON.Body({
-            mass: this.mass,
+        this.body = new CANNON.Body({
+            mass: this.parameters.mass,
             shape: shape,
-            position: new CANNON.Vec3(0, 3, 0),
+            position: this.parameters.position,
             material: this.physics.spaceshipMaterial,
         })
-        body.position.copy(this.parameters.position)
-        this.physics.world.addBody(body)
+        this.body.position.copy(this.parameters.position)
+        this.physics.world.addBody(this.body)
+
+        this.physics.objectsToUpdate.push({
+            mesh: this.mesh,
+            body: this.body
+        })
+
     }
 
     // TODO: Continue here with controls
+    update()
+    {
+        // console.log(this.body.position)
+
+    }
 }

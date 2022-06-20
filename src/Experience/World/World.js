@@ -42,5 +42,9 @@ export default class World {
                 galaxy.update()
             }
         }
+
+        if (this.spaceship) {
+            this.spaceship.update()
+        }
     }
 }
