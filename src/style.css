@@ -17,6 +17,10 @@ body {
     outline: none;
 }
 
+/****************
+    LOADER
+*****************/
+
 .loader {
     position: fixed;
     top: 0;
@@ -53,14 +57,25 @@ body {
     margin-left: 20px;
 }
 
-
-
 /* Pour l'animation, changer la couleur lettre par lettre en JS selon la progression */
 
 .inactive {
     color: #0E2241;
 }
 
+/****************
+    COCKPIT
+*****************/
+#cockpit {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: #65FFDA;
+}
+
+/****************
+    COPTYRIGHT
+*****************/
 
 .copyright {
     position: fixed;
