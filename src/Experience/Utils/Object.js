@@ -1,4 +1,4 @@
-export default class Debug
+export default class Object
 {
     constructor()
     {

@@ -8,12 +8,15 @@ export default class Spaceship {
         height: 1,
         depth: 4,
         color: '#ffeded',
-        cruiseSpeed: 2,
-        turboSpeed: 20,
-        turbo: 100,
-        turboAllowed: true,
+        cruiseSpeed: 5,
+        turboSpeed: 40,
+        turbo: 0,
+        turboAllowed: false,
         mass: 1,
         position: { x: 0, y: 0, z: 0 },
+        rotation: {
+            up: - Math.PI / 12, down: Math.PI / 12, left: Math.PI / 12, right: - Math.PI / 12
+        },
     }
 
     dom = {}
@@ -26,7 +29,18 @@ export default class Spaceship {
         this.debug = this.experience.debug
         this.physics = this.experience.physics
         this.controls = this.experience.controls
-        this.dom.turbo = document.querySelector('.turbo-value')
+        this.dom.turboJauge = document.querySelectorAll('.turbo-jauge-unit')
+        this.currentSpeed = this.parameters.cruiseSpeed
+        this.angles =  {
+            x: 0, y: 0
+        }
+        this.angleVariation = {
+            current: 0,
+            max: 0.05,
+            mode: 'left'
+        }
+        this.offset = this.camera.offset
+
 
         // Debug
         if (this.debug.active) {
@@ -104,14 +118,6 @@ export default class Spaceship {
 
     update() {
 
-        // Monter
-
-        // Descendre
-
-        // Droite
-
-        // Gauche
-
         /************************
             TURBO DATA MANAGEMENT
         *************************/
@@ -120,7 +126,7 @@ export default class Spaceship {
         if (this.controls.actions.turbo && this.parameters.turboAllowed) {
             if (this.parameters.turbo > 0) {
                 // If we still have turbo, lower the jauge
-                this.parameters.turbo -= 1
+                this.parameters.turbo -= 2
             } else if (this.parameters.turbo == 0) {
                 // If we don't have turbo anymore, disable it
                 this.parameters.turboAllowed = false
@@ -138,13 +144,24 @@ export default class Spaceship {
             }
         }
 
+        let backgroundColor = ''
+
         if (this.parameters.turboAllowed == true) {
-            this.dom.turbo.style.color = '#b3e6b3'
+            backgroundColor = '#b3e6b3'
         } else {
-            this.dom.turbo.style.color = '#ff9999'
+            backgroundColor = '#ff9999'
         }
 
-        this.dom.turbo.innerHTML = this.parameters.turbo
+        // Fill turbo jauge
+        let fillValue = Math.floor(this.parameters.turbo / 10)
+
+        for (let i = 0; i < this.dom.turboJauge.length; i++) {
+            if (i < fillValue) {
+                this.dom.turboJauge[i].style.backgroundColor = backgroundColor
+            } else {
+                this.dom.turboJauge[i].style.backgroundColor = '#0E2241'
+            }
+        }
 
         /************************
             PHYSICS
@@ -153,24 +170,114 @@ export default class Spaceship {
         // Increase and decrease speed according to the turbo
         if (this.controls.actions.turbo && this.parameters.turboAllowed == true) {
             // Make speed increase progressively
-            if (this.body.velocity.z < this.parameters.turboSpeed) {
-                this.body.velocity.z += 1
+            if (this.currentSpeed < this.parameters.turboSpeed) {
+                this.currentSpeed += 1
             } else {
-                this.body.velocity.z = this.parameters.turboSpeed
+                this.currentSpeed = this.parameters.turboSpeed
             }
         } else {
             // Make speed decrease progressively
-            if (this.body.velocity.z > this.parameters.cruiseSpeed) {
-                this.body.velocity.z -= 1
+            if (this.currentSpeed > this.parameters.cruiseSpeed) {
+                this.currentSpeed -= 1
             } else {
-                this.body.velocity.z = this.parameters.cruiseSpeed
+                this.currentSpeed = this.parameters.cruiseSpeed
             }
         }
 
+        // Calculate angleX according to the up / down action
+        if (this.controls.actions.up) {
+            this.angles.x += 0.01
+        } else if (this.controls.actions.down) {
+            this.angles.x -= 0.01
+        }
+
+        /** TURN LEFT */
+        if (this.controls.actions.left) {
+
+            // If turning right before, reset angle variation
+            if (this.angleVariation.mode == 'right') {
+                this.angleVariation.mode = 'left'
+                this.angleVariation.current = 0
+            }
+
+            // If angle variation is not at its max, increase it
+            if (this.angleVariation.current < this.angleVariation.max) {
+                this.angleVariation.current += 0.001
+            }
+
+            // Turn left
+            this.angles.y += this.angleVariation.current
+
+            /** TURN RIGHT */
+        } else if (this.controls.actions.right) {
+            
+            // If turning left before, reset angle variation
+            if (this.angleVariation.mode == 'left') {
+                this.angleVariation.mode = 'right'
+                this.angleVariation.current = 0
+            }
+
+            // If angle variation is not at its max, increase it
+            if (this.angleVariation.current < this.angleVariation.max)
+            {
+                this.angleVariation.current += 0.001
+            }
+
+            // Turn right
+            this.angles.y -= this.angleVariation.current
+
+            /** NO HORIZONTAL TURN */
+        } else {
+            // Decreament angle variation
+            if (this.angleVariation.current > 0) {
+
+                if (this.angleVariation.mode == 'left') {
+                    this.angles.y += this.angleVariation.current
+                }
+
+                if (this.angleVariation.mode == 'right') {
+                    this.angles.y -= this.angleVariation.current
+                }
+
+                this.angleVariation.current -= 0.005
+            }
+        }
+
+        // Calculate and apply the rotation on the body
+        let quatX = new CANNON.Quaternion();
+        let quatY = new CANNON.Quaternion();
+        quatX.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), this.angles.x);
+        quatY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.angles.y);
+        let quaternion = quatY.mult(quatX);
+        quaternion.normalize();
+        this.body.quaternion.copy(quaternion);
+
+        
+        // Move the body in direction of the body rotation
+        var localVelocity = new CANNON.Vec3(0, 0, this.currentSpeed);
+        var worldVelocity = this.body.quaternion.vmult(localVelocity);
+        this.body.velocity.copy(worldVelocity);
+        
         /************************
             CAMERA
         *************************/
-        this.camera.instance.position.copy(this.body.position).add(this.camera.offset)
+        let offset = this.camera.offset.clone()
+        
+        // Move camera when boost
+        offset.z -= this.currentSpeed * 0.2
+        offset.x -= this.currentSpeed * 0.1
+
+        // Update camera offset according to the body horizontal rotation
+
+        // View from side
+        offset.applyQuaternion(new THREE.Quaternion(0, this.body.quaternion.y, 0, this.body.quaternion.w))
+
+        // View feom behind
+        // offset.applyQuaternion(this.body.quaternion)
+
+        this.camera.instance.position.copy(this.body.position).add(offset)
+
+        // Make the camera look the body position
         this.camera.instance.lookAt(this.mesh.position)
     }
 }

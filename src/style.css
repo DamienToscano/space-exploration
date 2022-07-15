@@ -73,6 +73,24 @@ body {
     color: #65FFDA;
 }
 
+#turbo-container {
+    display: flex;
+    align-items: center;
+}
+
+#turbo-jauge {
+    height: 15px;
+    margin-left: 10px;
+}
+
+.turbo-jauge-unit {
+    width: 5px;
+    height: 100%;
+    background-color: #0E2241;
+    display: inline-block;
+    margin: 0 2px;
+}
+
 /****************
     COPTYRIGHT
 *****************/

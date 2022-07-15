@@ -28,7 +28,7 @@ export default class World {
     createGalaxies() {
         this.galaxies = []       
 
-        for (let i = 0; i < (Math.floor(Math.random() * 10) + 1); i++) {
+        for (let i = 0; i < (Math.floor(Math.random() * 40) + 1); i++) {
             let galaxy = new Galaxy(true)
             galaxy.setPosition((Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000)
             this.galaxies.push(galaxy)
