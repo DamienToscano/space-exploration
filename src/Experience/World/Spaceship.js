@@ -30,6 +30,7 @@ export default class Spaceship {
         this.physics = this.experience.physics
         this.controls = this.experience.controls
         this.dom.turboJauge = document.querySelectorAll('.turbo-jauge-unit')
+        this.dom.speedValue = document.querySelector('#speed-value')
         this.currentSpeed = this.parameters.cruiseSpeed
         this.angles =  {
             x: 0, y: 0
@@ -106,7 +107,10 @@ export default class Spaceship {
 
     update() {
 
-        // TODO: Add speed cursor management
+        /************************
+            SPEED DATA MANAGEMENT
+        *************************/
+        this.dom.speedValue.textContent = this.currentSpeed
 
         /************************
             TURBO DATA MANAGEMENT
