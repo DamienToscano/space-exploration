@@ -10,7 +10,7 @@ export default class Camera
         this.sizes = this.experience.sizes
         this.scene = this.experience.scene
         this.canvas = this.experience.canvas
-        this.offset = new THREE.Vector3(-8, 8, -16)
+        this.offset = new THREE.Vector3(0, 6, -25)
 
         this.setInstance()
         this.setControls()

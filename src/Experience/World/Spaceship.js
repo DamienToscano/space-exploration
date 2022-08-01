@@ -54,26 +54,15 @@ export default class Spaceship {
     }
 
     setSpaceship() {
-        this.setGeometry()
-        this.setMaterial()
-        this.setMesh()
+        this.setModel()
     }
 
-    setGeometry() {
-        this.geometry = new THREE.BoxBufferGeometry(1, 1, 1)
-    }
-
-    setMaterial() {
-        this.material = new THREE.MeshBasicMaterial({
-            color: this.parameters.color,
-        })
-    }
-
-    setMesh() {
-        this.mesh = new THREE.Mesh(this.geometry, this.mesh)
-        this.mesh.scale.set(this.parameters.width, this.parameters.height, this.parameters.depth)
-        this.mesh.position.copy(this.parameters.position)
-        this.scene.add(this.mesh)
+    setModel() {
+        this.model = this.resources.items.spaceship
+        this.spaceship = this.model.scene.children[0]
+        this.spaceship.position.copy(this.parameters.position)
+        this.spaceship.scale.set(1 / 100, 1 / 100, 1 / 100)
+        this.scene.add(this.spaceship)
     }
 
     setPhysics() {
@@ -82,7 +71,6 @@ export default class Spaceship {
     }
 
     setMaterial() {
-        // Add spaceship material to the physic world
         this.physics.spaceshipMaterial = new CANNON.Material('spaceshipMaterial')
     }
 
@@ -103,7 +91,7 @@ export default class Spaceship {
         this.physics.world.addBody(this.body)
 
         this.physics.objectsToUpdate.push({
-            mesh: this.mesh,
+            mesh: this.spaceship,
             body: this.body
         })
     }
@@ -117,6 +105,8 @@ export default class Spaceship {
     }
 
     update() {
+
+        // TODO: Add speed cursor management
 
         /************************
             TURBO DATA MANAGEMENT
@@ -265,19 +255,15 @@ export default class Spaceship {
         
         // Move camera when boost
         offset.z -= this.currentSpeed * 0.2
-        offset.x -= this.currentSpeed * 0.1
 
         // Update camera offset according to the body horizontal rotation
 
         // View from side
         offset.applyQuaternion(new THREE.Quaternion(0, this.body.quaternion.y, 0, this.body.quaternion.w))
 
-        // View feom behind
-        // offset.applyQuaternion(this.body.quaternion)
-
         this.camera.instance.position.copy(this.body.position).add(offset)
 
         // Make the camera look the body position
-        this.camera.instance.lookAt(this.mesh.position)
+        this.camera.instance.lookAt(this.spaceship.position)
     }
 }
