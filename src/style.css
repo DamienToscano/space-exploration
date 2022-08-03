@@ -17,6 +17,10 @@ body {
     outline: none;
 }
 
+/****************
+    LOADER
+*****************/
+
 .loader {
     position: fixed;
     top: 0;
@@ -53,14 +57,43 @@ body {
     margin-left: 20px;
 }
 
-
-
 /* Pour l'animation, changer la couleur lettre par lettre en JS selon la progression */
 
 .inactive {
     color: #0E2241;
 }
 
+/****************
+    COCKPIT
+*****************/
+#cockpit {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: #65FFDA;
+}
+
+#turbo-container {
+    display: flex;
+    align-items: center;
+}
+
+#turbo-jauge {
+    height: 15px;
+    margin-left: 10px;
+}
+
+.turbo-jauge-unit {
+    width: 5px;
+    height: 100%;
+    background-color: #0E2241;
+    display: inline-block;
+    margin: 0 2px;
+}
+
+/****************
+    COPTYRIGHT
+*****************/
 
 .copyright {
     position: fixed;

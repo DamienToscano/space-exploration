@@ -10,6 +10,8 @@ import World from './World/World.js'
 import Resources from './Utils/Resources.js'
 import Loader from './World/Loader.js'
 import sources from './sources.js'
+import Physics from './Physics/World.js'
+import Controls from './World/Controls.js'
 
 let instance = null
 
@@ -42,6 +44,8 @@ export default class Experience
         this.camera = new Camera()
         this.renderer = new Renderer()
         this.world = new World()
+        this.physics = new Physics()
+        this.controls = new Controls()
 
         // Resize event
         this.sizes.on('resize', () =>
@@ -67,6 +71,7 @@ export default class Experience
         this.camera.update()
         this.world.update()
         this.renderer.update()
+        this.physics.update()
     }
 
     destroy()

@@ -1,6 +1,7 @@
 import Experience from '../Experience.js'
-import Environment from "./Environment.js";
-import Galaxy from './Galaxy.js';
+import Environment from "./Environment.js"
+import Galaxy from './Galaxy.js'
+import Spaceship from './Spaceship.js'
 
 export default class World {
     constructor() {
@@ -19,6 +20,7 @@ export default class World {
             this.resources.on('ready', () => {
                 this.environment = new Environment()
                 this.createGalaxies()
+                this.spaceship = new Spaceship()
             })
         }
     }
@@ -26,7 +28,7 @@ export default class World {
     createGalaxies() {
         this.galaxies = []       
 
-        for (let i = 0; i < (Math.floor(Math.random() * 10) + 1); i++) {
+        for (let i = 0; i < (Math.floor(Math.random() * 40) + 1); i++) {
             let galaxy = new Galaxy(true)
             galaxy.setPosition((Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000)
             this.galaxies.push(galaxy)
@@ -39,6 +41,10 @@ export default class World {
             for (let galaxy of this.galaxies) {
                 galaxy.update()
             }
+        }
+
+        if (this.spaceship) {
+            this.spaceship.update()
         }
     }
 }
