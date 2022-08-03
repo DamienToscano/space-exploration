@@ -5,12 +5,6 @@ export default class Controls extends EventEmitter
     constructor()
     {
         super()
-
-        // this.experience = new Experience()
-        // this.camera = this.experience.camera
-        // this.sizes = this.experience.sizes
-        // this.time = this.experience.time
-
         this.setActions()
         this.setKeyboard()
     }
