@@ -32,16 +32,24 @@ export default class Spaceship {
         this.dom.turboJauge = document.querySelectorAll('.turbo-jauge-unit')
         this.dom.speedValue = document.querySelector('#speed-value')
         this.currentSpeed = this.parameters.cruiseSpeed
-        this.angles =  {
-            x: 0, y: 0
+        this.angles = {
+            x: 0, y: 0, z: 0
+        }
+        this.anglesMax = {
+            x: 1,
+            z: 0.3
         }
         this.angleVariation = {
             current: 0,
             max: 0.05,
             mode: 'left'
-        }
+        },
+        this.tiltVariation = {
+            current: 0,
+            max: 0.5,
+            mode: 'left',
+        },
         this.offset = this.camera.offset
-
 
         // Debug
         if (this.debug.active) {
@@ -76,7 +84,6 @@ export default class Spaceship {
     }
 
     setBody() {
-        // Create rectangle test body
         // TODO: Adapt body form when the spaceship model is used
 
         // For boxes in cannon, we have to divide the dimensions by 2
@@ -194,31 +201,54 @@ export default class Spaceship {
                 this.angleVariation.current = 0
             }
 
+            if (this.tiltVariation.mode == 'right') {
+                this.tiltVariation.mode = 'left'
+                this.tiltVariation.current = 0
+            }
+
             // If angle variation is not at its max, increase it
             if (this.angleVariation.current < this.angleVariation.max) {
                 this.angleVariation.current += 0.001
             }
 
+            if (this.tiltVariation.current < this.tiltVariation.max) {
+                this.tiltVariation.current += 0.001
+            }
+
             // Turn left
             this.angles.y += this.angleVariation.current
 
+            // Tilt on the left
+            this.angles.z -= this.tiltVariation.current
+
             /** TURN RIGHT */
         } else if (this.controls.actions.right) {
-            
+
             // If turning left before, reset angle variation
             if (this.angleVariation.mode == 'left') {
                 this.angleVariation.mode = 'right'
                 this.angleVariation.current = 0
             }
 
+            if (this.tiltVariation.mode == 'left') {
+                this.tiltVariation.mode = 'right'
+                this.tiltVariation.current = 0
+            }
+
             // If angle variation is not at its max, increase it
-            if (this.angleVariation.current < this.angleVariation.max)
-            {
+            if (this.angleVariation.current < this.angleVariation.max) {
                 this.angleVariation.current += 0.001
+            }
+
+            if (this.tiltVariation.current < this.tiltVariation.max) {
+                this.tiltVariation.current += 0.001
             }
 
             // Turn right
             this.angles.y -= this.angleVariation.current
+
+            // Tilt on the right
+            this.angles.z += this.tiltVariation.current
 
             /** NO HORIZONTAL TURN */
         } else {
@@ -235,28 +265,65 @@ export default class Spaceship {
 
                 this.angleVariation.current -= 0.005
             }
+
+            if (this.tiltVariation.current > 0) {
+                if (this.tiltVariation.mode == 'left') {
+                    this.angles.z -= this.tiltVariation.current
+                }
+
+                if (this.tiltVariation.mode == 'right') {
+                    this.angles.z += this.tiltVariation.current
+                }
+
+                this.tiltVariation.current -= 0.005
+            }
+
+            if (this.angles.z < 0 ) {
+                this.angles.z += 0.05
+            }
+
+            if (this.angles.z > 0 ) {
+                this.angles.z -= 0.05
+            }
+        }
+
+        // Cap angle x
+        if (this.angles.x > this.anglesMax.x) {
+            this.angles.x = this.anglesMax.x
+        } else if (this.angles.x < -this.anglesMax.x) {
+            this.angles.x = -this.anglesMax.x
+        }
+
+        // Cap angle z
+        if (this.angles.z > this.anglesMax.z) {
+            this.angles.z = this.anglesMax.z
+        } else if (this.angles.z < -this.anglesMax.z) {
+            this.angles.z = -this.anglesMax.z
         }
 
         // Calculate and apply the rotation on the body
         let quatX = new CANNON.Quaternion();
         let quatY = new CANNON.Quaternion();
+        let quatZ = new CANNON.Quaternion();
         quatX.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), this.angles.x);
         quatY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.angles.y);
+        quatZ.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), this.angles.z);
         let quaternion = quatY.mult(quatX);
+        quaternion = quaternion.mult(quatZ);
         quaternion.normalize();
         this.body.quaternion.copy(quaternion);
 
-        
+
         // Move the body in direction of the body rotation
         var localVelocity = new CANNON.Vec3(0, 0, this.currentSpeed);
         var worldVelocity = this.body.quaternion.vmult(localVelocity);
         this.body.velocity.copy(worldVelocity);
-        
+
         /************************
             CAMERA
         *************************/
         let offset = this.camera.offset.clone()
-        
+
         // Move camera when boost
         offset.z -= this.currentSpeed * 0.2
 
