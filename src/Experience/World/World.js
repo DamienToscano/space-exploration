@@ -1,4 +1,5 @@
 import Experience from '../Experience.js'
+import Asteroid from './Asteroid.js'
 import Environment from "./Environment.js"
 import Galaxy from './Galaxy.js'
 import Spaceship from './Spaceship.js'
@@ -20,6 +21,7 @@ export default class World {
             this.resources.on('ready', () => {
                 this.environment = new Environment()
                 this.createGalaxies()
+                this.createAsteroids()
                 this.spaceship = new Spaceship()
             })
         }
@@ -33,6 +35,10 @@ export default class World {
             galaxy.setPosition((Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000)
             this.galaxies.push(galaxy)
         }
+    }
+
+    createAsteroids() {
+        let asteroid = new Asteroid()
     }
 
     update() {
