@@ -5,6 +5,10 @@ import Galaxy from './Galaxy.js'
 import Spaceship from './Spaceship.js'
 
 export default class World {
+    parameters = {
+        size: 1000,
+    }
+
     constructor() {
         this.experience = new Experience()
         this.scene = this.experience.scene
@@ -38,10 +42,22 @@ export default class World {
     }
 
     createAsteroids() {
+        this.asteroids = []
+
+        for (let i = 0; i < 50; i++) {
+            this.createAsteroid()
+        }
+
+        console.log(this.asteroids)
+    }
+
+    createAsteroid() {
         let asteroid = new Asteroid()
+        this.asteroids.push(asteroid)
     }
 
     update() {
+
         // Update the galaxies
         if (this.galaxies) {
             for (let galaxy of this.galaxies) {

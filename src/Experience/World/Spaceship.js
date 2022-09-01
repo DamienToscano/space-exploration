@@ -84,7 +84,7 @@ export default class Spaceship {
     }
 
     setBody() {
-        // TODO: Adapt body form when the spaceship model is used
+        // TODO: Adapt body form when the spaceship model is used. See asteroid getdimensions method
 
         // For boxes in cannon, we have to divide the dimensions by 2
         const shape = new CANNON.Box(new CANNON.Vec3(this.parameters.width / 2, this.parameters.height / 2, this.parameters.depth / 2))
@@ -317,6 +317,7 @@ export default class Spaceship {
         // Move the body in direction of the body rotation
         var localVelocity = new CANNON.Vec3(0, 0, this.currentSpeed);
         var worldVelocity = this.body.quaternion.vmult(localVelocity);
+        // TODO: Remove that while test asteroid
         this.body.velocity.copy(worldVelocity);
 
         /************************
