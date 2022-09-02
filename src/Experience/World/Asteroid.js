@@ -9,8 +9,9 @@ export default class Asteroid {
         position: { x: 0, y: 0, z: 0 },
     }
 
-    constructor() {
+    constructor(id) {
 
+        this.asteroid_number = id
         this.experience = new Experience()
         this.time = this.experience.time
         this.camera = this.experience.camera
@@ -39,20 +40,14 @@ export default class Asteroid {
     }
 
     setModel() {
-        // Select random asteroid between 1 and 13
-        let asteroid_number = Math.ceil(Math.random() * 13)
-        console.log(asteroid_number)
-        this.model = this.resources.items['asteroid' + asteroid_number]
-        console.log(this.model)
+        this.model = this.resources.items['asteroid' + this.asteroid_number]
         this.asteroid = this.model.scene.children[0]
-        console.log(this.asteroid)
         this.scene.add(this.asteroid)
 
-        // TODO: Voir pourquoi ça bug quand on veut récupérer deux fois la même asteroid
+        // TODO: See how to add more asteroids by duplicating them withot bugs
     }
 
     getDimensions() {
-        console.log(this.asteroid.geometry)
         const box = new THREE.Box3()
         this.asteroid.geometry.computeBoundingBox()
         box.copy(this.asteroid.geometry.boundingBox).applyMatrix4(this.asteroid.matrixWorld)

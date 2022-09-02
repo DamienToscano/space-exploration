@@ -44,20 +44,19 @@ export default class World {
     createAsteroids() {
         this.asteroids = []
 
-        for (let i = 0; i < 50; i++) {
-            this.createAsteroid()
+        for (let i = 1; i <= 13; i++) {
+            this.createAsteroid(i)
         }
 
-        console.log(this.asteroids)
+        // TODO: See how to add more asteroids by duplicating them
     }
 
-    createAsteroid() {
-        let asteroid = new Asteroid()
+    createAsteroid(id) {
+        let asteroid = new Asteroid(id)
         this.asteroids.push(asteroid)
     }
 
     update() {
-
         // Update the galaxies
         if (this.galaxies) {
             for (let galaxy of this.galaxies) {
