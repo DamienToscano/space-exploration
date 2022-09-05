@@ -44,15 +44,20 @@ export default class World {
     createAsteroids() {
         this.asteroids = []
 
+        // Create first ones , one for each different models
         for (let i = 1; i <= 13; i++) {
             this.createAsteroid(i)
         }
 
-        // TODO: See how to add more asteroids by duplicating them
+        // Then just clone existing ones
+        for (let i = 1; i <= 50; i++) {
+            this.createAsteroid()
+        }
     }
 
-    createAsteroid(id) {
+    createAsteroid(id = null) {
         let asteroid = new Asteroid(id)
+        console.log('World')
         this.asteroids.push(asteroid)
     }
 

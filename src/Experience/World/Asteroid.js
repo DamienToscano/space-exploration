@@ -19,6 +19,7 @@ export default class Asteroid {
         this.resources = this.experience.resources
         this.physics = this.experience.physics
         this.size = this.experience.world.parameters.size / 2
+        this.asteroids = this.experience.world.asteroids
 
         this.setModel()
         this.getDimensions()
@@ -39,12 +40,21 @@ export default class Asteroid {
         }
     }
 
+    /**
+     * Set the model
+     * With imported model for first ones
+     * And then, just clone them
+     */
     setModel() {
-        this.model = this.resources.items['asteroid' + this.asteroid_number]
-        this.asteroid = this.model.scene.children[0]
-        this.scene.add(this.asteroid)
 
-        // TODO: See how to add more asteroids by duplicating them withot bugs
+        if (this.asteroid_number) {
+            this.model = this.resources.items['asteroid' + this.asteroid_number]
+            this.asteroid = this.model.scene.children[0]
+        } else {
+            this.asteroid = this.asteroids[Math.ceil(Math.random() * 13)].asteroid.clone()
+        }
+        
+        this.scene.add(this.asteroid)
     }
 
     getDimensions() {

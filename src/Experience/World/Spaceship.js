@@ -114,6 +114,9 @@ export default class Spaceship {
 
     update() {
 
+        // TODO: Fix spaceship rotation when it collides with an asteroid
+        
+
         /************************
             SPEED DATA MANAGEMENT
         *************************/
