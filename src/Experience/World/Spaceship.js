@@ -4,10 +4,6 @@ import * as CANNON from 'cannon-es'
 
 export default class Spaceship {
     parameters = {
-        width: 2,
-        height: 1,
-        depth: 4,
-        color: '#ffeded',
         cruiseSpeed: 5,
         turboSpeed: 40,
         turbo: 0,
@@ -56,14 +52,11 @@ export default class Spaceship {
             this.debugFolder = this.debug.ui.addFolder('Stars')
         }
 
-        this.setSpaceship()
+        this.setModel()
+        this.calculateDimensions()
         this.setPhysics()
         this.setControls()
 
-    }
-
-    setSpaceship() {
-        this.setModel()
     }
 
     setModel() {
@@ -72,6 +65,15 @@ export default class Spaceship {
         this.spaceship.position.copy(this.parameters.position)
         this.spaceship.scale.set(1 / 100, 1 / 100, 1 / 100)
         this.scene.add(this.spaceship)
+    }
+
+    // Define hit box dimensions
+    calculateDimensions() {
+        const box = new THREE.Box3()
+        // console.log(this.spaceship.children[0])
+        box.setFromObject(this.spaceship)
+        this.dimensions = new THREE.Vector3(0, 0, 0)
+        box.getSize(this.dimensions)
     }
 
     setPhysics() {
@@ -84,10 +86,8 @@ export default class Spaceship {
     }
 
     setBody() {
-        // TODO: Adapt body form when the spaceship model is used. See asteroid getdimensions method
-
         // For boxes in cannon, we have to divide the dimensions by 2
-        const shape = new CANNON.Box(new CANNON.Vec3(this.parameters.width / 2, this.parameters.height / 2, this.parameters.depth / 2))
+        const shape = new CANNON.Box(new CANNON.Vec3(this.dimensions.x / 2, this.dimensions.y / 2, this.dimensions.z / 2))
 
         this.body = new CANNON.Body({
             mass: this.parameters.mass,
@@ -115,7 +115,6 @@ export default class Spaceship {
     update() {
 
         // TODO: Fix spaceship rotation when it collides with an asteroid
-        
 
         /************************
             SPEED DATA MANAGEMENT
@@ -308,13 +307,15 @@ export default class Spaceship {
         let quatX = new CANNON.Quaternion();
         let quatY = new CANNON.Quaternion();
         let quatZ = new CANNON.Quaternion();
-        quatX.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), this.angles.x);
-        quatY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.angles.y);
-        quatZ.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), this.angles.z);
-        let quaternion = quatY.mult(quatX);
-        quaternion = quaternion.mult(quatZ);
-        quaternion.normalize();
-        this.body.quaternion.copy(quaternion);
+        // TODO: On définit le quaternion par rapport aux angles
+        quatX.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), this.angles.x)
+        quatY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.angles.y)
+        quatZ.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), this.angles.z)
+        let quaternion = quatY.mult(quatX)
+        quaternion = quaternion.mult(quatZ)
+        quaternion.normalize()
+        // console.log(this.body.quaternion)
+        this.body.quaternion.copy(quaternion)
 
 
         // Move the body in direction of the body rotation

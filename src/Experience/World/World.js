@@ -27,6 +27,10 @@ export default class World {
                 this.createGalaxies()
                 this.createAsteroids()
                 this.spaceship = new Spaceship()
+                this.physics = this.experience.physics
+
+                // Set contacts after everything is loaded
+                this.physics.setContacts()
             })
         }
     }
@@ -50,14 +54,13 @@ export default class World {
         }
 
         // Then just clone existing ones
-        for (let i = 1; i <= 50; i++) {
+        for (let i = 1; i <= 300; i++) {
             this.createAsteroid()
         }
     }
 
     createAsteroid(id = null) {
         let asteroid = new Asteroid(id)
-        console.log('World')
         this.asteroids.push(asteroid)
     }
 

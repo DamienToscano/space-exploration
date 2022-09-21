@@ -22,7 +22,7 @@ export default class Asteroid {
         this.asteroids = this.experience.world.asteroids
 
         this.setModel()
-        this.getDimensions()
+        this.calculateDimensions()
         this.setMass()
         this.setPosition()
         this.setPhysics()
@@ -51,20 +51,20 @@ export default class Asteroid {
             this.model = this.resources.items['asteroid' + this.asteroid_number]
             this.asteroid = this.model.scene.children[0]
         } else {
-            this.asteroid = this.asteroids[Math.ceil(Math.random() * 13)].asteroid.clone()
+            this.asteroid = this.asteroids[Math.floor(Math.random() * 13)].asteroid.clone()
         }
         
         this.scene.add(this.asteroid)
     }
 
-    getDimensions() {
+    calculateDimensions() {
         const box = new THREE.Box3()
         this.asteroid.geometry.computeBoundingBox()
         box.copy(this.asteroid.geometry.boundingBox).applyMatrix4(this.asteroid.matrixWorld)
         this.dimensions = new THREE.Vector3(0, 0, 0)
         box.getSize(this.dimensions)
         // width, height and depth
-        this.volume = parseInt(this.dimensions.x * this.dimensions.y * this.dimensions.z)
+        this.volume = Math.ceil(this.dimensions.x * this.dimensions.y * this.dimensions.z)
     }
 
     setPhysics() {
