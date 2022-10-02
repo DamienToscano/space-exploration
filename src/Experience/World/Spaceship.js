@@ -40,12 +40,12 @@ export default class Spaceship {
             max: 0.05,
             mode: 'left'
         },
-        this.tiltVariation = {
-            current: 0,
-            max: 0.5,
-            mode: 'left',
-        },
-        this.offset = this.camera.offset
+            this.tiltVariation = {
+                current: 0,
+                max: 0.5,
+                mode: 'left',
+            },
+            this.offset = this.camera.offset
 
         // Debug
         if (this.debug.active) {
@@ -280,11 +280,11 @@ export default class Spaceship {
                 this.tiltVariation.current -= 0.005
             }
 
-            if (this.angles.z < 0 ) {
+            if (this.angles.z < 0) {
                 this.angles.z += 0.05
             }
 
-            if (this.angles.z > 0 ) {
+            if (this.angles.z > 0) {
                 this.angles.z -= 0.05
             }
         }
@@ -307,7 +307,9 @@ export default class Spaceship {
         let quatX = new CANNON.Quaternion();
         let quatY = new CANNON.Quaternion();
         let quatZ = new CANNON.Quaternion();
-        // TODO: On définit le quaternion par rapport aux angles
+        // Angles x, y and z are calculated from the up / down / left / right actions
+        // Quaternions are used to apply the rotation on the body according to the angles
+        // console.log(this.angles)
         quatX.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), this.angles.x)
         quatY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.angles.y)
         quatZ.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), this.angles.z)
@@ -321,7 +323,6 @@ export default class Spaceship {
         // Move the body in direction of the body rotation
         var localVelocity = new CANNON.Vec3(0, 0, this.currentSpeed);
         var worldVelocity = this.body.quaternion.vmult(localVelocity);
-        // TODO: Remove that while test asteroid
         this.body.velocity.copy(worldVelocity);
 
         /************************
