@@ -57,6 +57,7 @@ export default class Resources extends EventEmitter
                     break;
                 case 'cubeTexture':
                     this.loaders.cubeTextureLoader.load(
+                        // Array of 6 paths
                         source.path,
                         (file) =>
                         {

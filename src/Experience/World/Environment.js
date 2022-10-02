@@ -15,10 +15,19 @@ export default class Environment {
             this.debugFolder = this.debug.ui.addFolder('environment')
         }
 
+        this.setEnvironmentMap()
         this.setAmbientLight()
         this.setDirectionalLight()
         this.setStars()
         this.setLoader()
+    }
+
+    setEnvironmentMap() {
+        this.environmentMap = this.resources.items.environmentMap
+        // this.environmentMap.mapping = THREE.EquirectangularReflectionMapping
+        this.environmentMap.encoding = THREE.sRGBEncoding
+        this.scene.background = this.environmentMap
+        this.scene.environment = this.environmentMap
     }
 
     setAmbientLight() {

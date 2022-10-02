@@ -6,6 +6,20 @@ export default [
         path: 'textures/stars/star.png'
     },
     {
+        // Environment map
+        name: 'environmentMap',
+        type: 'cubeTexture',
+        path: [
+            // TODO: Find my own environment map
+            'textures/environment/left.png',
+            'textures/environment/right.png',
+            'textures/environment/top.png',
+            'textures/environment/bottom.png',
+            'textures/environment/back.png',
+            'textures/environment/front.png'
+        ]
+    },
+    {
         // Spaceship
         name: 'spaceship',
         type: 'gltfModel',
