@@ -9,6 +9,7 @@ export default class Stars
         this.scene = this.experience.scene
         this.resources = this.experience.resources
         this.debug = this.experience.debug
+        this.size = this.experience.world.parameters.size
 
         // Debug
         if(this.debug.active)
@@ -29,9 +30,9 @@ export default class Stars
         this.positions = new Float32Array(this.particlesCount * 3)
 
         for (let i = 0; i < this.particlesCount; i++) {
-            this.positions[i * 3] = (Math.random() - 0.5) * 1000
-            this.positions[i * 3 + 1] = (Math.random() - 0.5) * 1000
-            this.positions[i * 3 + 2] = (Math.random() - 0.5) * 1000
+            this.positions[i * 3] = (Math.random() - 0.5) * this.size
+            this.positions[i * 3 + 1] = (Math.random() - 0.5) * this.size
+            this.positions[i * 3 + 2] = (Math.random() - 0.5) * this.size
         }
     }
 

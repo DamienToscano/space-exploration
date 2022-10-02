@@ -24,6 +24,21 @@ export default class World {
         // this.world.gravity.set(0, -2.0, 0)
     }
 
+    setContacts() {
+        this.spaceshipAsteroidContactMaterial = new CANNON.ContactMaterial(
+            this.spaceshipMaterial,
+            this.asteroidMaterial,
+            {
+                // Friction -> How quickly the object will slow if they rub against each other
+                friction: 0.1,
+                // Restitution -> How much bounce the object will have
+                restitution: 0.5,
+            }
+        )
+
+        this.world.addContactMaterial(this.spaceshipAsteroidContactMaterial)
+    }
+
     update() {
 
         // Fixing framerate

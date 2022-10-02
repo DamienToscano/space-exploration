@@ -1,9 +1,14 @@
 import Experience from '../Experience.js'
+import Asteroid from './Asteroid.js'
 import Environment from "./Environment.js"
 import Galaxy from './Galaxy.js'
 import Spaceship from './Spaceship.js'
 
 export default class World {
+    parameters = {
+        size: 1000,
+    }
+
     constructor() {
         this.experience = new Experience()
         this.scene = this.experience.scene
@@ -20,7 +25,12 @@ export default class World {
             this.resources.on('ready', () => {
                 this.environment = new Environment()
                 this.createGalaxies()
+                this.createAsteroids()
                 this.spaceship = new Spaceship()
+                this.physics = this.experience.physics
+
+                // Set contacts after everything is loaded
+                this.physics.setContacts()
             })
         }
     }
@@ -33,6 +43,25 @@ export default class World {
             galaxy.setPosition((Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000)
             this.galaxies.push(galaxy)
         }
+    }
+
+    createAsteroids() {
+        this.asteroids = []
+
+        // Create first ones , one for each different models
+        for (let i = 1; i <= 13; i++) {
+            this.createAsteroid(i)
+        }
+
+        // Then just clone existing ones
+        for (let i = 1; i <= 300; i++) {
+            this.createAsteroid()
+        }
+    }
+
+    createAsteroid(id = null) {
+        let asteroid = new Asteroid(id)
+        this.asteroids.push(asteroid)
     }
 
     update() {

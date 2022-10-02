@@ -46,7 +46,7 @@ export default class Experience
         this.world = new World()
         this.physics = new Physics()
         this.controls = new Controls()
-
+        
         // Resize event
         this.sizes.on('resize', () =>
         {
