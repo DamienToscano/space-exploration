@@ -10,13 +10,12 @@ export default [
         name: 'environmentMap',
         type: 'cubeTexture',
         path: [
-            // TODO: Find my own environment map
-            'textures/environment/0/px.png', //  left
-            'textures/environment/0/nx.png', // right
-            'textures/environment/0/py.png', // top
-            'textures/environment/0/ny.png', // bottom
-            'textures/environment/0/pz.png', // back
-            'textures/environment/0/nz.png' // front
+            'textures/environment/1/px.png', //  left
+            'textures/environment/1/nx.png', // right
+            'textures/environment/1/py.png', // top
+            'textures/environment/1/ny.png', // bottom
+            'textures/environment/1/pz.png', // back
+            'textures/environment/1/nz.png' // front
         ]
     },
     {
