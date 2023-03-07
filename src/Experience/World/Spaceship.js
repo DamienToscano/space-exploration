@@ -63,7 +63,6 @@ export default class Spaceship {
         this.model = this.resources.items.spaceship
         this.spaceship = this.model.scene.children[0]
         this.spaceship.position.copy(this.parameters.position)
-        this.spaceship.scale.set(1 / 100, 1 / 100, 1 / 100)
         this.scene.add(this.spaceship)
     }
 

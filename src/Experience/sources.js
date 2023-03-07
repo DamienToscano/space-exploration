@@ -9,7 +9,7 @@ export default [
         // Spaceship
         name: 'spaceship',
         type: 'gltfModel',
-        path: 'models/spaceship/spaceship.glb'
+        path: 'models/spaceship/spaceship2.glb'
     },
     {
         // Asteroid 1
