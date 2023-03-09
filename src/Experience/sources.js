@@ -89,4 +89,10 @@ export default [
         type: 'gltfModel',
         path: 'models/asteroid/asteroid13.glb'
     },
+    {
+        // Earth
+        name: 'earthPlanet',
+        type: 'gltfModel',
+        path: 'models/planets/earth.glb'
+    },
 ]

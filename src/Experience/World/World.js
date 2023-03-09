@@ -3,6 +3,8 @@ import Asteroid from './Asteroid.js'
 import Environment from "./Environment.js"
 import Galaxy from './Galaxy.js'
 import Spaceship from './Spaceship.js'
+import Planet from './Planet.js'
+import PlanetsData from '../Data/Planets.js'
 
 export default class World {
     parameters = {
@@ -14,6 +16,7 @@ export default class World {
         this.scene = this.experience.scene
         this.resources = this.experience.resources
         this.sources = this.experience.sources
+        this.planets_data_handler = new PlanetsData()
 
         // Check if the experience has resources
         if (this.experience.object.isEmtpy(this.sources)) {
@@ -25,6 +28,7 @@ export default class World {
             this.resources.on('ready', () => {
                 this.environment = new Environment()
                 this.createGalaxies()
+                this.createPlanets()
                 this.createAsteroids()
                 this.spaceship = new Spaceship()
                 this.physics = this.experience.physics
@@ -43,6 +47,19 @@ export default class World {
             galaxy.setPosition((Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000)
             this.galaxies.push(galaxy)
         }
+    }
+
+    createPlanets() {
+        this.planets = []
+
+        for (let planet of this.planets_data_handler.getPlanets()) {
+            this.createPlanet(planet.name, planet.size)
+        }
+    }
+
+    createPlanet(name, size) {
+        let planet = new Planet(name, size)
+        this.planets.push(planet)
     }
 
     createAsteroids() {
@@ -74,6 +91,13 @@ export default class World {
 
         if (this.spaceship) {
             this.spaceship.update()
+        }
+
+        // Update the planets
+        if (this.planets) {
+            for (let planet of this.planets) {
+                planet.update()
+            }
         }
     }
 }

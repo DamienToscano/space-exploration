@@ -69,7 +69,6 @@ export default class Spaceship {
     // Define hit box dimensions
     calculateDimensions() {
         const box = new THREE.Box3()
-        // console.log(this.spaceship.children[0])
         box.setFromObject(this.spaceship)
         this.dimensions = new THREE.Vector3(0, 0, 0)
         box.getSize(this.dimensions)
