@@ -1,8 +1,9 @@
 import * as THREE from "three"
-import Experience from "../Experience.js"
+import Experience from "../../Experience.js"
+import Planet from "../Planet.js"
 import * as CANNON from 'cannon-es'
 
-export default class Planet {
+export default class Ice extends Planet {
     parameters = {
         mass: 0,
         position: { x: 0, y: 0, z: 0 },
@@ -10,31 +11,11 @@ export default class Planet {
     }
 
     constructor(size) {
-        this.size = size
-        this.experience = new Experience()
-        this.time = this.experience.time
-        this.camera = this.experience.camera
-        this.scene = this.experience.scene
-        this.resources = this.experience.resources
-        this.physics = this.experience.physics
-        this.world_size = this.experience.world.parameters.size / 2
-
-        this.setModel()
-        this.calculateDimensions()
-        this.setPosition()
-        this.setPhysics()
-    }
-
-    setPosition() {
-        this.parameters.position = {
-            x: (Math.random() - 0.5) * this.world_size,
-            y: (Math.random() - 0.5) * this.world_size,
-            z: (Math.random() - 0.5) * this.world_size,
-        }
+        super(size)
     }
 
     setModel() {
-        this.model = this.resources.items[this.name + 'Planet']
+        this.model = this.resources.items.icePlanet
         this.planet = this.model.scene.children[0]
         this.planet.scale.set(this.size, this.size, this.size)
         this.planet.position.copy(this.parameters.position)

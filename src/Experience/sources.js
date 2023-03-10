@@ -89,10 +89,60 @@ export default [
         type: 'gltfModel',
         path: 'models/asteroid/asteroid13.glb'
     },
+    // Planets
     {
-        // Earth
         name: 'earthPlanet',
         type: 'gltfModel',
         path: 'models/planets/earth.glb'
+    },
+    {
+        name: 'blueRockyPlanet',
+        type: 'gltfModel',
+        path: 'models/planets/blue_rocky.glb'
+    },
+    {
+        name: 'brownSpikePlanet',
+        type: 'gltfModel',
+        path: 'models/planets/brown_spike.glb'
+    },
+    {
+        name: 'brownyPlanet',
+        type: 'gltfModel',
+        path: 'models/planets/browny.glb'
+    },
+    {
+        name: 'greenSpikePlanet',
+        type: 'gltfModel',
+        path: 'models/planets/green_spike.glb'
+    },
+    {
+        name: 'icePlanet',
+        type: 'gltfModel',
+        path: 'models/planets/ice.glb'
+    },
+    {
+        name: 'lavaPlanet',
+        type: 'gltfModel',
+        path: 'models/planets/lava.glb'
+    },
+    {
+        name: 'moonPlanet',
+        type: 'gltfModel',
+        path: 'models/planets/moon.glb'
+    },
+    {
+        name: 'purplePlanet',
+        type: 'gltfModel',
+        path: 'models/planets/purple.glb'
+    },
+    {
+        name: 'redPlanet',
+        type: 'gltfModel',
+        path: 'models/planets/red.glb'
+    },
+    {
+        name: 'ringsPlanet',
+        type: 'gltfModel',
+        path: 'models/planets/rings.glb'
     },
 ]

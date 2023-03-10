@@ -5,6 +5,19 @@ import Galaxy from './Galaxy.js'
 import Spaceship from './Spaceship.js'
 import Planet from './Planet.js'
 import PlanetsData from '../Data/Planets.js'
+/* import BlueRocky from './Planets/BlueRocky.js'
+import BrownSpike from './Planets/BrownSpike.js'
+import Browny from './Planets/Browny.js'
+import Earth from './Planets/Earth.js'
+import GreenSpike from './Planets/GreenSpike.js'
+import Ice from './Planets/Ice.js'
+import Lava from './Planets/Lava.js'
+import Moon from './Planets/Moon.js'
+import Purple from './Planets/Purple.js'
+import Red from './Planets/Red.js'
+import Rings from './Planets/Rings.js' */
+
+
 
 export default class World {
     parameters = {
@@ -58,8 +71,17 @@ export default class World {
     }
 
     createPlanet(name, size) {
-        let planet = new Planet(name, size)
-        this.planets.push(planet)
+        let class_name = name.charAt(0).toUpperCase() + name.slice(1)
+        import(`./Planets/${class_name}.js`)
+            .then((module) => {
+                let planet = new module.default(size)
+                this.planets.push(planet)
+            })  
+
+        // let planet = new Planet(name, size)
+
+        // Create planet class according to name
+        // this.planets.push(planet)
     }
 
     createAsteroids() {
