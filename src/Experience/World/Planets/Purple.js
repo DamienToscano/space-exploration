@@ -5,6 +5,7 @@ import * as CANNON from 'cannon-es'
 
 export default class Purple extends Planet {
     parameters = {
+        // name: 'purple',
         mass: 0,
         position: { x: 0, y: 0, z: 0 },
         dimensions: new THREE.Vector3(0, 0, 0),
@@ -22,23 +23,23 @@ export default class Purple extends Planet {
         this.scene.add(this.planet)
     }
 
-    calculateDimensions() {
-        const box = new THREE.Box3()
-        box.setFromObject(this.planet)
-        box.getSize(this.parameters.dimensions)
-    }
+    // calculateDimensions() {
+    //     const box = new THREE.Box3()
+    //     box.setFromObject(this.planet)
+    //     box.getSize(this.parameters.dimensions)
+    // }
 
-    setPhysics() {
-        this.setMaterial()
-        this.setBody()
-    }
+    // setPhysics() {
+    //     this.setMaterial()
+    //     this.setBody()
+    // }
 
-    setMaterial() {
-        this.physics.planetMaterial = new CANNON.Material('planetMaterial')
-    }
+    // setMaterial() {
+    //     this.physics.planetMaterial = new CANNON.Material('planetMaterial')
+    // }
 
     setBody() {
-        const shape = new CANNON.Sphere(this.parameters.dimensions.x / 2)
+        const shape = new CANNON.Sphere(this.parameters.dimensions.x / 2 + (this.parameters.dimensions.x / 2 / 10))
         this.body = new CANNON.Body({
             mass: this.parameters.mass,
             shape: shape,

@@ -2,9 +2,11 @@ import * as THREE from "three"
 import Experience from "../../Experience.js"
 import Planet from "../Planet.js"
 import * as CANNON from 'cannon-es'
+import { threeToCannon, ShapeType } from 'three-to-cannon';
 
 export default class Red extends Planet {
     parameters = {
+        // name: 'red',
         mass: 0,
         position: { x: 0, y: 0, z: 0 },
         dimensions: new THREE.Vector3(0, 0, 0),
@@ -22,29 +24,30 @@ export default class Red extends Planet {
         this.scene.add(this.planet)
     }
 
-    calculateDimensions() {
-        const box = new THREE.Box3()
-        box.setFromObject(this.planet)
-        box.getSize(this.parameters.dimensions)
-    }
+    // calculateDimensions() {
+    //     const box = new THREE.Box3()
+    //     box.setFromObject(this.planet)
+    //     box.getSize(this.parameters.dimensions)
+    // }
 
-    setPhysics() {
-        this.setMaterial()
-        this.setBody()
-    }
+    // setPhysics() {
+    //     this.setMaterial()
+    //     this.setBody()
+    // }
 
-    setMaterial() {
-        this.physics.planetMaterial = new CANNON.Material('planetMaterial')
-    }
+    // setMaterial() {
+    //     this.physics.planetMaterial = new CANNON.Material('planetMaterial')
+    // }
 
     setBody() {
-        const shape = new CANNON.Sphere(this.parameters.dimensions.x / 2)
-        this.body = new CANNON.Body({
-            mass: this.parameters.mass,
-            shape: shape,
-            position: this.parameters.position,
-            material: this.physics.planetMaterial,
-        })
+       // Convert the THREE.Mesh to a CANNON.Body using three-to-cannon
+       const result = threeToCannon(this.planet, {type: ShapeType.HULL});
+       this.body = new CANNON.Body({
+           mass: this.parameters.mass,
+           shape: result.shape,
+           position: this.parameters.position,
+           material: this.physics.planetMaterial,
+       })
 
         this.physics.world.addBody(this.body)
 

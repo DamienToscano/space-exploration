@@ -5,6 +5,7 @@ import * as CANNON from 'cannon-es'
 
 export default class Earth extends Planet {
     parameters = {
+        // name: 'earth',
         mass: 0,
         position: { x: 0, y: 0, z: 0 },
         dimensions: new THREE.Vector3(0, 0, 0),
@@ -17,28 +18,29 @@ export default class Earth extends Planet {
     setModel() {
         this.model = this.resources.items.earthPlanet
         this.planet = this.model.scene.children[0]
+        console.log(this.planet, this.size)
         this.planet.scale.set(this.size, this.size, this.size)
         this.planet.position.copy(this.parameters.position)
         this.scene.add(this.planet)
     }
 
-    calculateDimensions() {
-        const box = new THREE.Box3()
-        box.setFromObject(this.planet)
-        box.getSize(this.parameters.dimensions)
-    }
+    // calculateDimensions() {
+    //     const box = new THREE.Box3()
+    //     box.setFromObject(this.planet)
+    //     box.getSize(this.parameters.dimensions)
+    // }
 
-    setPhysics() {
-        this.setMaterial()
-        this.setBody()
-    }
+    // setPhysics() {
+    //     this.setMaterial()
+    //     this.setBody()
+    // }
 
-    setMaterial() {
-        this.physics.planetMaterial = new CANNON.Material('planetMaterial')
-    }
+    // setMaterial() {
+    //     this.physics.planetMaterial = new CANNON.Material('planetMaterial')
+    // }
 
     setBody() {
-        const shape = new CANNON.Sphere(this.parameters.dimensions.x / 2)
+        const shape = new CANNON.Sphere(this.parameters.dimensions.x / 2 + (this.parameters.dimensions.x / 2 / 20))
         this.body = new CANNON.Body({
             mass: this.parameters.mass,
             shape: shape,

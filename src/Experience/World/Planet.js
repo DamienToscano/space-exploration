@@ -4,6 +4,7 @@ import * as CANNON from 'cannon-es'
 
 export default class Planet {
     parameters = {
+        // name: 'rings',
         mass: 0,
         position: { x: 0, y: 0, z: 0 },
         dimensions: new THREE.Vector3(0, 0, 0),
@@ -33,13 +34,13 @@ export default class Planet {
         }
     }
 
-    setModel() {
-        this.model = this.resources.items[this.name + 'Planet']
-        this.planet = this.model.scene.children[0]
-        this.planet.scale.set(this.size, this.size, this.size)
-        this.planet.position.copy(this.parameters.position)
-        this.scene.add(this.planet)
-    }
+    // setModel() {
+    //     this.model = this.resources.items[this.parameters.name + 'Planet']
+    //     this.planet = this.model.scene.children[0]
+    //     this.planet.scale.set(this.size, this.size, this.size)
+    //     this.planet.position.copy(this.parameters.position)
+    //     this.scene.add(this.planet)
+    // }
 
     calculateDimensions() {
         const box = new THREE.Box3()

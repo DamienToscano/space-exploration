@@ -5,6 +5,7 @@ import * as CANNON from 'cannon-es'
 
 export default class Ice extends Planet {
     parameters = {
+        // name: 'ice',
         mass: 0,
         position: { x: 0, y: 0, z: 0 },
         dimensions: new THREE.Vector3(0, 0, 0),
@@ -22,20 +23,20 @@ export default class Ice extends Planet {
         this.scene.add(this.planet)
     }
 
-    calculateDimensions() {
-        const box = new THREE.Box3()
-        box.setFromObject(this.planet)
-        box.getSize(this.parameters.dimensions)
-    }
+    // calculateDimensions() {
+    //     const box = new THREE.Box3()
+    //     box.setFromObject(this.planet)
+    //     box.getSize(this.parameters.dimensions)
+    // }
 
-    setPhysics() {
-        this.setMaterial()
-        this.setBody()
-    }
+    // setPhysics() {
+    //     this.setMaterial()
+    //     this.setBody()
+    // }
 
-    setMaterial() {
-        this.physics.planetMaterial = new CANNON.Material('planetMaterial')
-    }
+    // setMaterial() {
+    //     this.physics.planetMaterial = new CANNON.Material('planetMaterial')
+    // }
 
     setBody() {
         const shape = new CANNON.Sphere(this.parameters.dimensions.x / 2)

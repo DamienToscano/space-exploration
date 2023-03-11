@@ -2,9 +2,11 @@ import * as THREE from "three"
 import Experience from "../../Experience.js"
 import * as CANNON from 'cannon-es'
 import Planet from "../Planet.js"
+import { threeToCannon, ShapeType } from 'three-to-cannon';
 
 export default class Rings extends Planet {
     parameters = {
+        // name: 'rings',
         mass: 0,
         position: { x: 0, y: 0, z: 0 },
         dimensions: new THREE.Vector3(0, 0, 0),
@@ -15,6 +17,7 @@ export default class Rings extends Planet {
     }
 
     setModel() {
+        console.log(this.parameters)
         this.model = this.resources.items.ringsPlanet
         this.planet = this.model.scene.children[0]
         this.planet.scale.set(this.size, this.size, this.size)
@@ -22,26 +25,27 @@ export default class Rings extends Planet {
         this.scene.add(this.planet)
     }
 
-    calculateDimensions() {
-        const box = new THREE.Box3()
-        box.setFromObject(this.planet)
-        box.getSize(this.parameters.dimensions)
-    }
+    // calculateDimensions() {
+    //     const box = new THREE.Box3()
+    //     box.setFromObject(this.planet)
+    //     box.getSize(this.parameters.dimensions)
+    // }
 
-    setPhysics() {
-        this.setMaterial()
-        this.setBody()
-    }
+    // setPhysics() {
+    //     this.setMaterial()
+    //     this.setBody()
+    // }
 
-    setMaterial() {
-        this.physics.planetMaterial = new CANNON.Material('planetMaterial')
-    }
+    // setMaterial() {
+    //     this.physics.planetMaterial = new CANNON.Material('planetMaterial')
+    // }
 
     setBody() {
-        const shape = new CANNON.Sphere(this.parameters.dimensions.x / 2)
+        // Convert the THREE.Mesh to a CANNON.Body using three-to-cannon
+        const result = threeToCannon(this.planet, {type: ShapeType.HULL});
         this.body = new CANNON.Body({
             mass: this.parameters.mass,
-            shape: shape,
+            shape: result.shape,
             position: this.parameters.position,
             material: this.physics.planetMaterial,
         })

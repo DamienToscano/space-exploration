@@ -49,7 +49,7 @@ export default class Experience
         this.controls = new Controls()
 
         // Cannon Debugger
-        // this.cannonDebugger = new CannonDebugger(this.scene, this.physics.world)
+        this.cannonDebugger = new CannonDebugger(this.scene, this.physics.world)
         
         // Resize event
         this.sizes.on('resize', () =>
@@ -82,7 +82,7 @@ export default class Experience
 
         if (this.physics) {
             this.physics.update()
-            // this.cannonDebugger.update()
+            this.cannonDebugger.update()
         }
     }
 
