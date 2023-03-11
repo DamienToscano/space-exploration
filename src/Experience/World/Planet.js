@@ -28,9 +28,9 @@ export default class Planet {
 
     setPosition() {
         this.parameters.position = {
-            x: (Math.random() - 0.5) * this.world_size,
-            y: (Math.random() - 0.5) * this.world_size,
-            z: (Math.random() - 0.5) * this.world_size,
+            x: (Math.random() - 0.5) * this.world_size * 2,
+            y: (Math.random() - 0.5) * this.world_size * 2,
+            z: (Math.random() - 0.5) * this.world_size * 2,
         }
     }
 
