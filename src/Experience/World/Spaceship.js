@@ -1,6 +1,7 @@
 import * as THREE from "three"
 import Experience from "../Experience.js"
 import * as CANNON from 'cannon-es'
+import { threeToCannon, ShapeType } from 'three-to-cannon';
 
 export default class Spaceship {
     parameters = {
@@ -53,7 +54,8 @@ export default class Spaceship {
         }
 
         this.setModel()
-        this.calculateDimensions()
+        // Calculate dimensions is not used anymore for now
+        // this.calculateDimensions()
         this.setPhysics()
         this.setControls()
 
@@ -69,7 +71,6 @@ export default class Spaceship {
     // Define hit box dimensions
     calculateDimensions() {
         const box = new THREE.Box3()
-        // console.log(this.spaceship.children[0])
         box.setFromObject(this.spaceship)
         this.dimensions = new THREE.Vector3(0, 0, 0)
         box.getSize(this.dimensions)
@@ -85,16 +86,14 @@ export default class Spaceship {
     }
 
     setBody() {
-        // For boxes in cannon, we have to divide the dimensions by 2
-        const shape = new CANNON.Box(new CANNON.Vec3(this.dimensions.x / 2, this.dimensions.y / 2, this.dimensions.z / 2))
-
-        this.body = new CANNON.Body({
-            mass: this.parameters.mass,
-            shape: shape,
-            position: this.parameters.position,
-            material: this.physics.spaceshipMaterial,
-        })
-        this.body.position.copy(this.parameters.position)
+        // Convert the THREE.Mesh to a CANNON.Body using three-to-cannon
+       const result = threeToCannon(this.spaceship, {type: ShapeType.HULL});
+       this.body = new CANNON.Body({
+           mass: this.parameters.mass,
+           shape: result.shape,
+           position: this.parameters.position,
+           material: this.physics.planetMaterial,
+       })
         this.physics.world.addBody(this.body)
 
         this.physics.objectsToUpdate.push({
