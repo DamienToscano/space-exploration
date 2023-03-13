@@ -7,7 +7,6 @@ export default class Planet {
         // name: 'rings',
         mass: 0,
         position: { x: 0, y: 0, z: 0 },
-        dimensions: new THREE.Vector3(0, 0, 0),
     }
 
     constructor(size) {
@@ -21,7 +20,6 @@ export default class Planet {
         this.world_size = this.experience.world.parameters.size / 2
 
         this.setModel()
-        this.calculateDimensions()
         this.setPosition()
         this.setPhysics()
     }
@@ -34,18 +32,8 @@ export default class Planet {
         }
     }
 
-    // setModel() {
-    //     this.model = this.resources.items[this.parameters.name + 'Planet']
-    //     this.planet = this.model.scene.children[0]
-    //     this.planet.scale.set(this.size, this.size, this.size)
-    //     this.planet.position.copy(this.parameters.position)
-    //     this.scene.add(this.planet)
-    // }
-
-    calculateDimensions() {
-        const box = new THREE.Box3()
-        box.setFromObject(this.planet)
-        box.getSize(this.parameters.dimensions)
+    setModel() {
+        // In child class
     }
 
     setPhysics() {
@@ -58,20 +46,7 @@ export default class Planet {
     }
 
     setBody() {
-        const shape = new CANNON.Sphere(this.parameters.dimensions.x / 2)
-        this.body = new CANNON.Body({
-            mass: this.parameters.mass,
-            shape: shape,
-            position: this.parameters.position,
-            material: this.physics.planetMaterial,
-        })
-
-        this.physics.world.addBody(this.body)
-
-        this.physics.objectsToUpdate.push({
-            mesh: this.planet,
-            body: this.body,
-        })
+        // In child class
     }
 
     update() {

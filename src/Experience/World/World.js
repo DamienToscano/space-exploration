@@ -87,7 +87,7 @@ export default class World {
         }
 
         // Then just clone existing ones
-        for (let i = 1; i <= 300; i++) {
+        for (let i = 1; i <= 100; i++) {
             this.createAsteroid()
         }
     }
