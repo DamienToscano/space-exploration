@@ -1,4 +1,3 @@
-import * as THREE from "three"
 import Experience from "../Experience.js"
 import * as CANNON from 'cannon-es'
 
@@ -13,7 +12,6 @@ export default class Planet {
         this.size = size
         this.experience = new Experience()
         this.time = this.experience.time
-        this.camera = this.experience.camera
         this.scene = this.experience.scene
         this.resources = this.experience.resources
         this.physics = this.experience.physics
