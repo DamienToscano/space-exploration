@@ -52,7 +52,7 @@ export default class Planet {
     update() {
         // Rotate the body around the y axis
         this.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.time.elapsed * 0.0001)
-        this.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), this.time.elapsed * 0.0001)
+        this.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), this.time.elapsed * 0.00015)
 
     }
 }
