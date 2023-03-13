@@ -41,12 +41,25 @@ export default class World {
     createGalaxies() {
         this.galaxies = []       
 
-        for (let i = 0; i < (Math.floor(Math.random() * 40) + 1); i++) {
+        // Put the galaxies in random positions but outside the spaceship zone
+        for (let i = 0; i < 15; i++) {
             let galaxy = new Galaxy(true)
-            galaxy.setPosition((Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000)
+            let coordinates = this.randomPoint()
+            galaxy.setPosition(coordinates.x, coordinates.y, coordinates.z)
             this.galaxies.push(galaxy)
         }
     }
+
+    randomPoint() {
+        let x, y, z, distance;
+        do {
+          x = (Math.random() * this.parameters.size * 3) - this.parameters.size * 1.5;
+          y = (Math.random() * this.parameters.size * 3) - this.parameters.size * 1.5;
+          z = (Math.random() * this.parameters.size * 3) - this.parameters.size * 1.5;
+          distance = Math.sqrt(x*x + y*y + z*z);
+        } while (distance < 1000);
+        return {x: x, y: y, z: z};
+      }
 
     createPlanets() {
         this.planets = []

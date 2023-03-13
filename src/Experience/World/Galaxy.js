@@ -58,12 +58,12 @@ export default class Galaxy
     {
         // Between 5000 and 55000
         this.parameters.count = Math.floor(Math.random() * 50000) + 5000
-        // Between 10 and 30
-        this.parameters.radius = Math.floor(Math.random() * 20) + 10
+        // Between 100 and 120
+        this.parameters.radius = Math.floor(Math.random() * 20) + 100
         // Between 2 and 12
         this.parameters.branches = Math.floor(Math.random() * 10) + 2
-        // Bewteen 0.1 and 1.1
-        this.parameters.spin = Math.floor(Math.random() * 1) + 0.1
+        // Bewteen 0.01 and 0.11
+        this.parameters.spin = 0.01 + Math.random() * 0.1
         this.parameters.insideColor = this.parameters.colors[Math.floor(Math.random() * this.parameters.colors.length)]
         this.parameters.outsideColor = this.parameters.colors[Math.floor(Math.random() * this.parameters.colors.length)]
     }
