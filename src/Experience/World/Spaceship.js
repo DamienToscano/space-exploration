@@ -159,7 +159,7 @@ export default class Spaceship {
 
         // TODO: Ne pas appliquer la condition sur la vélocité, mais plutôt changer la valeur de la force en fonction de la vélocité
 
-        if (this.body.velocity.z == 10) {
+        if (this.body.velocity.z < 10) {
             this.body.applyLocalForce(this.parameters.force, this.parameters.forceAxis)
         }
 
