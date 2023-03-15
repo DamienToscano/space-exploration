@@ -2,10 +2,11 @@ import * as THREE from "three"
 import Experience from "../Experience.js"
 import * as CANNON from 'cannon-es'
 import { threeToCannon, ShapeType } from 'three-to-cannon';
+import { apply } from "file-loader";
 
 export default class Spaceship {
     parameters = {
-        cruiseSpeed: 5,
+        cruiseSpeed: 0,
         turboSpeed: 40,
         turbo: 0,
         turboAllowed: false,
@@ -14,6 +15,13 @@ export default class Spaceship {
         rotation: {
             up: - Math.PI / 12, down: Math.PI / 12, left: Math.PI / 12, right: - Math.PI / 12
         },
+        // Force applied to the spaceship
+        force: { x: 0, y: 0, z: 0 },
+        // Axis of the force
+        forceAxis: { x: 0, y: 0, z: 0 },
+        accelerationForce: 10,
+        horizontalRotationForce: 0.1,
+        verticalRotationForce: 0.1,
     }
 
     dom = {}
@@ -54,8 +62,6 @@ export default class Spaceship {
         }
 
         this.setModel()
-        // Calculate dimensions is not used anymore for now
-        // this.calculateDimensions()
         this.setPhysics()
         this.setControls()
 
@@ -66,14 +72,6 @@ export default class Spaceship {
         this.spaceship = this.model.scene.children[0]
         this.spaceship.position.copy(this.parameters.position)
         this.scene.add(this.spaceship)
-    }
-
-    // Define hit box dimensions
-    calculateDimensions() {
-        const box = new THREE.Box3()
-        box.setFromObject(this.spaceship)
-        this.dimensions = new THREE.Vector3(0, 0, 0)
-        box.getSize(this.dimensions)
     }
 
     setPhysics() {
@@ -87,13 +85,17 @@ export default class Spaceship {
 
     setBody() {
         // Convert the THREE.Mesh to a CANNON.Body using three-to-cannon
-       const result = threeToCannon(this.spaceship, {type: ShapeType.HULL});
-       this.body = new CANNON.Body({
-           mass: this.parameters.mass,
-           shape: result.shape,
-           position: this.parameters.position,
-           material: this.physics.planetMaterial,
-       })
+        const result = threeToCannon(this.spaceship, { type: ShapeType.HULL });
+        this.body = new CANNON.Body({
+            mass: this.parameters.mass,
+            shape: result.shape,
+            position: this.parameters.position,
+            material: this.physics.planetMaterial,
+            // Avoid the spaceship to be asleep
+            allowSleep: false,
+            // Make the spaceship decelerate faster than normal
+            linearDamping: 0.1,
+        })
         this.physics.world.addBody(this.body)
 
         this.physics.objectsToUpdate.push({
@@ -108,12 +110,67 @@ export default class Spaceship {
         this.controls.on('turboEnd', () => {
             this.parameters.turboAllowed = false
         })
+
+        // Acceleration
+        this.controls.on('accelerateStart', () => {
+            this.parameters.force.z = this.parameters.accelerationForce
+        })
+
+        this.controls.on('accelerateEnd', () => {
+            this.parameters.force.z = 0
+        })
+
+        // Horizontal rotation
+        this.controls.on('leftStart', () => {
+            this.parameters.forceAxis.x = - this.parameters.horizontalRotationForce
+        })
+
+        this.controls.on('leftEnd', () => {
+            this.parameters.forceAxis.x = 0
+        })
+
+        this.controls.on('rightStart', () => {
+            this.parameters.forceAxis.x = this.parameters.horizontalRotationForce
+        })
+
+        this.controls.on('rightEnd', () => {
+            this.parameters.forceAxis.x = 0
+        })
+
+        // Vertical rotation
+        this.controls.on('upStart', () => {
+            this.parameters.forceAxis.y = this.parameters.verticalRotationForce
+        })
+
+        this.controls.on('upEnd', () => {
+            this.parameters.forceAxis.y = 0
+        })
+
+        this.controls.on('downStart', () => {
+            this.parameters.forceAxis.y = - this.parameters.verticalRotationForce
+        })
+
+        this.controls.on('downEnd', () => {
+            this.parameters.forceAxis.y = 0
+        })
     }
 
-    update() {
+    updateSpaceship() {
 
-        // TODO: Fix spaceship rotation when it collides with an asteroid
+        // TODO: Ne pas appliquer la condition sur la vélocité, mais plutôt changer la valeur de la force en fonction de la vélocité
 
+        if (this.body.velocity.z == 10) {
+            this.body.applyLocalForce(this.parameters.force, this.parameters.forceAxis)
+        }
+
+        // console.log(this.body.velocity.z, this.body.force.z)
+        
+        // console.log(this.body.force, this.body.velocity)
+        
+        
+    }
+
+    dataManagement() {
         /************************
             SPEED DATA MANAGEMENT
         *************************/
@@ -163,165 +220,19 @@ export default class Spaceship {
                 this.dom.turboJauge[i].style.backgroundColor = '#0E2241'
             }
         }
+    }
+
+    update() {
+
+        // TODO: Fix spaceship rotation when it collides with an asteroid and spaceship controls
+
+        this.dataManagement()
 
         /************************
             PHYSICS
         *************************/
 
-        // Increase and decrease speed according to the turbo
-        if (this.controls.actions.turbo && this.parameters.turboAllowed == true) {
-            // Make speed increase progressively
-            if (this.currentSpeed < this.parameters.turboSpeed) {
-                this.currentSpeed += 1
-            } else {
-                this.currentSpeed = this.parameters.turboSpeed
-            }
-        } else {
-            // Make speed decrease progressively
-            if (this.currentSpeed > this.parameters.cruiseSpeed) {
-                this.currentSpeed -= 1
-            } else {
-                this.currentSpeed = this.parameters.cruiseSpeed
-            }
-        }
-
-        // Calculate angleX according to the up / down action
-        if (this.controls.actions.up) {
-            this.angles.x += 0.01
-        } else if (this.controls.actions.down) {
-            this.angles.x -= 0.01
-        }
-
-        /** TURN LEFT */
-        if (this.controls.actions.left) {
-
-            // If turning right before, reset angle variation
-            if (this.angleVariation.mode == 'right') {
-                this.angleVariation.mode = 'left'
-                this.angleVariation.current = 0
-            }
-
-            if (this.tiltVariation.mode == 'right') {
-                this.tiltVariation.mode = 'left'
-                this.tiltVariation.current = 0
-            }
-
-            // If angle variation is not at its max, increase it
-            if (this.angleVariation.current < this.angleVariation.max) {
-                this.angleVariation.current += 0.001
-            }
-
-            if (this.tiltVariation.current < this.tiltVariation.max) {
-                this.tiltVariation.current += 0.001
-            }
-
-            // Turn left
-            this.angles.y += this.angleVariation.current
-
-            // Tilt on the left
-            this.angles.z -= this.tiltVariation.current
-
-            /** TURN RIGHT */
-        } else if (this.controls.actions.right) {
-
-            // If turning left before, reset angle variation
-            if (this.angleVariation.mode == 'left') {
-                this.angleVariation.mode = 'right'
-                this.angleVariation.current = 0
-            }
-
-            if (this.tiltVariation.mode == 'left') {
-                this.tiltVariation.mode = 'right'
-                this.tiltVariation.current = 0
-            }
-
-            // If angle variation is not at its max, increase it
-            if (this.angleVariation.current < this.angleVariation.max) {
-                this.angleVariation.current += 0.001
-            }
-
-            if (this.tiltVariation.current < this.tiltVariation.max) {
-                this.tiltVariation.current += 0.001
-            }
-
-            // Turn right
-            this.angles.y -= this.angleVariation.current
-
-            // Tilt on the right
-            this.angles.z += this.tiltVariation.current
-
-            /** NO HORIZONTAL TURN */
-        } else {
-            // Decreament angle variation
-            if (this.angleVariation.current > 0) {
-
-                if (this.angleVariation.mode == 'left') {
-                    this.angles.y += this.angleVariation.current
-                }
-
-                if (this.angleVariation.mode == 'right') {
-                    this.angles.y -= this.angleVariation.current
-                }
-
-                this.angleVariation.current -= 0.005
-            }
-
-            if (this.tiltVariation.current > 0) {
-                if (this.tiltVariation.mode == 'left') {
-                    this.angles.z -= this.tiltVariation.current
-                }
-
-                if (this.tiltVariation.mode == 'right') {
-                    this.angles.z += this.tiltVariation.current
-                }
-
-                this.tiltVariation.current -= 0.005
-            }
-
-            if (this.angles.z < 0) {
-                this.angles.z += 0.05
-            }
-
-            if (this.angles.z > 0) {
-                this.angles.z -= 0.05
-            }
-        }
-
-        // Cap angle x
-        if (this.angles.x > this.anglesMax.x) {
-            this.angles.x = this.anglesMax.x
-        } else if (this.angles.x < -this.anglesMax.x) {
-            this.angles.x = -this.anglesMax.x
-        }
-
-        // Cap angle z
-        if (this.angles.z > this.anglesMax.z) {
-            this.angles.z = this.anglesMax.z
-        } else if (this.angles.z < -this.anglesMax.z) {
-            this.angles.z = -this.anglesMax.z
-        }
-
-        // Calculate and apply the rotation on the body
-        let quatX = new CANNON.Quaternion();
-        let quatY = new CANNON.Quaternion();
-        let quatZ = new CANNON.Quaternion();
-        // Angles x, y and z are calculated from the up / down / left / right actions
-        // Quaternions are used to apply the rotation on the body according to the angles
-        // console.log(this.angles)
-        quatX.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), this.angles.x)
-        quatY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.angles.y)
-        quatZ.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), this.angles.z)
-        let quaternion = quatY.mult(quatX)
-        quaternion = quaternion.mult(quatZ)
-        quaternion.normalize()
-        // console.log(this.body.quaternion)
-        this.body.quaternion.copy(quaternion)
-
-
-        // Move the body in direction of the body rotation
-        var localVelocity = new CANNON.Vec3(0, 0, this.currentSpeed);
-        var worldVelocity = this.body.quaternion.vmult(localVelocity);
-        this.body.velocity.copy(worldVelocity);
+        this.updateSpaceship()
 
         /************************
             CAMERA
@@ -334,7 +245,9 @@ export default class Spaceship {
         // Update camera offset according to the body horizontal rotation
 
         // View from side
-        offset.applyQuaternion(new THREE.Quaternion(0, this.body.quaternion.y, 0, this.body.quaternion.w))
+        // TODO: Fix camera rotation according to spaceship
+        offset.applyQuaternion(new THREE.Quaternion(this.body.quaternion.x, this.body.quaternion.y, 0, this.body.quaternion.w))
+        // console.log(this.body.quaternion)
 
         this.camera.instance.position.copy(this.body.position).add(offset)
 
