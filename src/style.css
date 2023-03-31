@@ -68,9 +68,16 @@ body {
 *****************/
 #cockpit {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    bottom: 20px;
+    left: 40px;
     color: #65FFDA;
+}
+
+#speedometer {
+    font-size: 10rem;
+    font-weight: 700;
+    /* Skew text */
+    transform: skew(-25deg);
 }
 
 #turbo-container {

@@ -2,7 +2,6 @@ import * as THREE from "three"
 import Experience from "../Experience.js"
 import * as CANNON from 'cannon-es'
 import { threeToCannon, ShapeType } from 'three-to-cannon';
-import { apply } from "file-loader";
 
 export default class Spaceship {
     parameters = {
@@ -20,8 +19,13 @@ export default class Spaceship {
         // Axis of the force
         forceAxis: { x: 0, y: 0, z: 0 },
         accelerationForce: 10,
-        horizontalRotationForce: 0.1,
-        verticalRotationForce: 0.1,
+        horizontalRotationAxis: 0.05,
+        horizontalRotationForce: 1.5,
+        verticalRotationAxis: 0.01,
+        verticalRotationForce: 0.25,
+        velocityLimit: 10,
+        angularVelocityLimitX: 0.05,
+        angularVelocityLimitY: 0.05,
     }
 
     dom = {}
@@ -34,8 +38,8 @@ export default class Spaceship {
         this.debug = this.experience.debug
         this.physics = this.experience.physics
         this.controls = this.experience.controls
-        this.dom.turboJauge = document.querySelectorAll('.turbo-jauge-unit')
-        this.dom.speedValue = document.querySelector('#speed-value')
+        // this.dom.turboJauge = document.querySelectorAll('.turbo-jauge-unit')
+        this.dom.speedValue = document.querySelector('#speedometer')
         this.currentSpeed = this.parameters.cruiseSpeed
         this.angles = {
             x: 0, y: 0, z: 0
@@ -72,6 +76,11 @@ export default class Spaceship {
         this.spaceship = this.model.scene.children[0]
         this.spaceship.position.copy(this.parameters.position)
         this.scene.add(this.spaceship)
+
+        this.camera.instance.position.set(0, 5, - 50)
+        // Rotate the camera 180° on the X axis to match the spaceship
+        this.camera.instance.rotation.y = Math.PI
+        this.spaceship.add(this.camera.instance)
     }
 
     setPhysics() {
@@ -90,12 +99,13 @@ export default class Spaceship {
             mass: this.parameters.mass,
             shape: result.shape,
             position: this.parameters.position,
-            material: this.physics.planetMaterial,
+            material: this.physics.spaceshipMaterial,
             // Avoid the spaceship to be asleep
             allowSleep: false,
             // Make the spaceship decelerate faster than normal
             linearDamping: 0.1,
         })
+
         this.physics.world.addBody(this.body)
 
         this.physics.objectsToUpdate.push({
@@ -122,66 +132,107 @@ export default class Spaceship {
 
         // Horizontal rotation
         this.controls.on('leftStart', () => {
-            this.parameters.forceAxis.x = - this.parameters.horizontalRotationForce
+            this.parameters.forceAxis.x = - this.parameters.horizontalRotationAxis
+            this.parameters.force.x = this.parameters.horizontalRotationForce
         })
 
         this.controls.on('leftEnd', () => {
             this.parameters.forceAxis.x = 0
+            this.parameters.force.x = 0
         })
 
         this.controls.on('rightStart', () => {
-            this.parameters.forceAxis.x = this.parameters.horizontalRotationForce
+            this.parameters.forceAxis.x = this.parameters.horizontalRotationAxis
+            this.parameters.force.x = - this.parameters.horizontalRotationForce
         })
 
         this.controls.on('rightEnd', () => {
             this.parameters.forceAxis.x = 0
+            this.parameters.force.x = 0
         })
 
         // Vertical rotation
         this.controls.on('upStart', () => {
-            this.parameters.forceAxis.y = this.parameters.verticalRotationForce
+            this.parameters.forceAxis.y = this.parameters.verticalRotationAxis
+            this.parameters.force.y = - this.parameters.verticalRotationForce
         })
 
         this.controls.on('upEnd', () => {
             this.parameters.forceAxis.y = 0
+            this.parameters.force.y = 0
         })
 
         this.controls.on('downStart', () => {
-            this.parameters.forceAxis.y = - this.parameters.verticalRotationForce
+            this.parameters.forceAxis.y = - this.parameters.verticalRotationAxis
+            this.parameters.force.y = this.parameters.verticalRotationForce
         })
 
         this.controls.on('downEnd', () => {
             this.parameters.forceAxis.y = 0
+            this.parameters.force.y = 0
         })
     }
 
     updateSpaceship() {
 
-        // TODO: Ne pas appliquer la condition sur la vélocité, mais plutôt changer la valeur de la force en fonction de la vélocité
-
-        if (this.body.velocity.z < 10) {
-            this.body.applyLocalForce(this.parameters.force, this.parameters.forceAxis)
+        this.current_force = {
+            x: 0,
+            y: 0,
+            z: 0
         }
 
-        // console.log(this.body.velocity.z, this.body.force.z)
-        
-        // console.log(this.body.force, this.body.velocity)
-        
-        
+        if (this.body.velocity.z < this.parameters.velocityLimit) {
+            this.current_force.z = this.parameters.force.z
+        }
+        if (Math.abs(this.body.angularVelocity.y) < this.parameters.angularVelocityLimitY) {
+            this.current_force.y = this.parameters.force.y
+        }
+        if (Math.abs(this.body.angularVelocity.x) < this.parameters.angularVelocityLimitX && Math.abs(this.body.angularVelocity.z) < this.parameters.angularVelocityLimitX) {
+            this.current_force.x = this.parameters.force.x
+        }
+
+        this.body.applyLocalForce(this.current_force, new CANNON.Vec3(0, 0, 1))
+
+        // Limit angular velocity when we hit something and the spaceship is rotating crazy
+        if (this.body.angularVelocity.x > this.parameters.angularVelocityLimitX) {
+            this.body.angularVelocity.x -= 0.01
+        }
+
+        if (this.body.angularVelocity.x < - this.parameters.angularVelocityLimitX) {
+            this.body.angularVelocity.x += 0.01
+        }
+
+        if (this.body.angularVelocity.y > this.parameters.angularVelocityLimitY) {
+            this.body.angularVelocity.y -= 0.01
+        }
+
+        if (this.body.angularVelocity.y < - this.parameters.angularVelocityLimitY) {
+            this.body.angularVelocity.y += 0.01
+        }
+
+        if (this.body.angularVelocity.z > this.parameters.angularVelocityLimitY) {
+            this.body.angularVelocity.z -= 0.01
+        }
+
+        if (this.body.angularVelocity.z < - this.parameters.angularVelocityLimitY) {
+            this.body.angularVelocity.z += 0.01
+        }
+
+        // TODO: Rotate the body when we move the spaceship
     }
 
     dataManagement() {
         /************************
             SPEED DATA MANAGEMENT
         *************************/
-        this.dom.speedValue.textContent = this.currentSpeed
+        this.dom.speedValue.textContent = Math.abs(this.body.velocity.z.toFixed(0))
 
         /************************
             TURBO DATA MANAGEMENT
         *************************/
 
         // If pressing turbo and turbo is allowed, decrease turbo if possible
-        if (this.controls.actions.turbo && this.parameters.turboAllowed) {
+        /* if (this.controls.actions.turbo && this.parameters.turboAllowed) {
             if (this.parameters.turbo > 0) {
                 // If we still have turbo, lower the jauge
                 this.parameters.turbo -= 2
@@ -219,12 +270,27 @@ export default class Spaceship {
             } else {
                 this.dom.turboJauge[i].style.backgroundColor = '#0E2241'
             }
-        }
+        } */
+    }
+
+    updateCamera() {
+
+        /* TODO: See how to smooth stuff when we reach the limit */
+        let x_offset = 0 + Math.round(this.body.angularVelocity.y * 10 * 100) / 100
+        let y_offset = 5 + Math.round(this.body.angularVelocity.x * 10 * 100) / 100
+        let z_offset = - 50 - this.body.velocity.z
+
+        this.camera.instance.position.set(
+            x_offset,
+            y_offset,
+            z_offset
+        )
+
+        // console.log(this.camera.instance.position)
+
     }
 
     update() {
-
-        // TODO: Fix spaceship rotation when it collides with an asteroid and spaceship controls
 
         this.dataManagement()
 
@@ -237,21 +303,7 @@ export default class Spaceship {
         /************************
             CAMERA
         *************************/
-        let offset = this.camera.offset.clone()
 
-        // Move camera when boost
-        offset.z -= this.currentSpeed * 0.2
-
-        // Update camera offset according to the body horizontal rotation
-
-        // View from side
-        // TODO: Fix camera rotation according to spaceship
-        offset.applyQuaternion(new THREE.Quaternion(this.body.quaternion.x, this.body.quaternion.y, 0, this.body.quaternion.w))
-        // console.log(this.body.quaternion)
-
-        this.camera.instance.position.copy(this.body.position).add(offset)
-
-        // Make the camera look the body position
-        this.camera.instance.lookAt(this.spaceship.position)
+        this.updateCamera()
     }
 }
