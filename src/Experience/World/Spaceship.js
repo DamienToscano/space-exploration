@@ -25,7 +25,9 @@ export default class Spaceship {
         verticalRotationForce: 0.25,
         velocityLimit: 10,
         angularVelocityLimitX: 0.05,
-        angularVelocityLimitY: 0.05,
+        angularVelocityLimitY: 0.10,
+        lock_force_y: false,
+        lock_force_x: false,
     }
 
     dom = {}
@@ -184,11 +186,26 @@ export default class Spaceship {
         if (this.body.velocity.z < this.parameters.velocityLimit) {
             this.current_force.z = this.parameters.force.z
         }
-        if (Math.abs(this.body.angularVelocity.y) < this.parameters.angularVelocityLimitY) {
+        if (Math.abs(this.body.angularVelocity.y) < this.parameters.angularVelocityLimitY && !this.lock_force_y) {
             this.current_force.y = this.parameters.force.y
         }
-        if (Math.abs(this.body.angularVelocity.x) < this.parameters.angularVelocityLimitX && Math.abs(this.body.angularVelocity.z) < this.parameters.angularVelocityLimitX) {
+        else {
+            this.lock_force_y = true
+            // Wait 1 second before unlocking the force
+            setTimeout(() => {
+                this.lock_force_y = false
+            }, 1000)
+        }
+
+        if (Math.abs(this.body.angularVelocity.x) < this.parameters.angularVelocityLimitX && Math.abs(this.body.angularVelocity.z) < this.parameters.angularVelocityLimitX && !this.lock_force_x) {
             this.current_force.x = this.parameters.force.x
+        }
+        else {
+            this.lock_force_x = true
+            // Wait 1 second before unlocking the force
+            setTimeout(() => {
+                this.lock_force_x = false
+            }, 1000)
         }
 
         this.body.applyLocalForce(this.current_force, new CANNON.Vec3(0, 0, 1))
@@ -275,7 +292,6 @@ export default class Spaceship {
 
     updateCamera() {
 
-        /* TODO: See how to smooth stuff when we reach the limit */
         let x_offset = 0 + Math.round(this.body.angularVelocity.y * 10 * 100) / 100
         let y_offset = 5 + Math.round(this.body.angularVelocity.x * 10 * 100) / 100
         let z_offset = - 50 - this.body.velocity.z
