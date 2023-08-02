@@ -28,6 +28,10 @@ export default class Spaceship {
         angularVelocityLimitY: 0.10,
         lock_force_y: false,
         lock_force_x: false,
+        horizontal_offset: 0,
+        vertical_offset: 0,
+        horizontal_offset_limit: 1,
+        vertical_offset_limit: 1,
     }
 
     dom = {}
@@ -234,8 +238,6 @@ export default class Spaceship {
         if (this.body.angularVelocity.z < - this.parameters.angularVelocityLimitY) {
             this.body.angularVelocity.z += 0.01
         }
-
-        // TODO: Rotate the body when we move the spaceship
     }
 
     dataManagement() {
@@ -243,57 +245,54 @@ export default class Spaceship {
             SPEED DATA MANAGEMENT
         *************************/
         this.dom.speedValue.textContent = Math.abs(this.body.velocity.z.toFixed(0))
-
-        /************************
-            TURBO DATA MANAGEMENT
-        *************************/
-
-        // If pressing turbo and turbo is allowed, decrease turbo if possible
-        /* if (this.controls.actions.turbo && this.parameters.turboAllowed) {
-            if (this.parameters.turbo > 0) {
-                // If we still have turbo, lower the jauge
-                this.parameters.turbo -= 2
-            } else if (this.parameters.turbo == 0) {
-                // If we don't have turbo anymore, disable it
-                this.parameters.turboAllowed = false
-            }
-        }
-
-        // If not pressing turbo or tubo not allowed, increase turbo if possible
-        if (!this.controls.actions.turbo || !this.parameters.turboAllowed) {
-            if (this.parameters.turbo < 100) {
-                // If turbo jauge is not full, fill it
-                this.parameters.turbo += 0.5
-            } else {
-                // If turbo jauge is full, allow turbo again
-                this.parameters.turboAllowed = true
-            }
-        }
-
-        let backgroundColor = ''
-
-        if (this.parameters.turboAllowed == true) {
-            backgroundColor = '#b3e6b3'
-        } else {
-            backgroundColor = '#ff9999'
-        }
-
-        // Fill turbo jauge
-        let fillValue = Math.floor(this.parameters.turbo / 10)
-
-        for (let i = 0; i < this.dom.turboJauge.length; i++) {
-            if (i < fillValue) {
-                this.dom.turboJauge[i].style.backgroundColor = backgroundColor
-            } else {
-                this.dom.turboJauge[i].style.backgroundColor = '#0E2241'
-            }
-        } */
+        this.dom.speedValue.style.opacity = Math.abs(this.body.velocity.z.toFixed(0)) / 10 + 0.1
     }
 
     updateCamera() {
 
-        let x_offset = 0 + Math.round(this.body.angularVelocity.y * 10 * 100) / 100
-        let y_offset = 5 + Math.round(this.body.angularVelocity.x * 10 * 100) / 100
+
+        if (this.controls.actions.left) {
+            if (this.parameters.horizontal_offset < this.parameters.horizontal_offset_limit) {
+                this.parameters.horizontal_offset += 0.01
+            }
+        }
+        else if (this.controls.actions.right) {
+            if (this.parameters.horizontal_offset > - this.parameters.horizontal_offset_limit) {
+                this.parameters.horizontal_offset -= 0.01
+            }
+        }
+        else {
+            if (this.parameters.horizontal_offset > 0) {
+                this.parameters.horizontal_offset -= 0.01
+            }
+            else if (this.parameters.horizontal_offset < 0) {
+                this.parameters.horizontal_offset += 0.01
+            }
+        }
+
+        console.log(this.parameters.horizontal_offset)
+
+        if (this.controls.actions.up) {
+            if (this.parameters.vertical_offset > - this.parameters.vertical_offset_limit) {
+                this.parameters.vertical_offset -= 0.01
+            }
+        }
+        else if (this.controls.actions.down) {
+            if (this.parameters.vertical_offset < this.parameters.vertical_offset_limit) {
+                this.parameters.vertical_offset += 0.01
+            }
+        }
+        else {
+            if (this.parameters.vertical_offset > 0) {
+                this.parameters.vertical_offset -= 0.01
+            }
+            else if (this.parameters.vertical_offset < 0) {
+                this.parameters.vertical_offset += 0.01
+            }
+        }
+
+        let x_offset = 0 + this.parameters.horizontal_offset
+        let y_offset = 5 + this.parameters.vertical_offset
         let z_offset = - 50 - this.body.velocity.z
 
         this.camera.instance.position.set(
@@ -301,9 +300,6 @@ export default class Spaceship {
             y_offset,
             z_offset
         )
-
-        // console.log(this.camera.instance.position)
-
     }
 
     update() {

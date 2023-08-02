@@ -23,7 +23,7 @@ export default class GreenSpike extends Planet {
 
     setBody() {
        // Convert the THREE.Mesh to a CANNON.Body using three-to-cannon
-       const result = threeToCannon(this.planet, {type: ShapeType.HULL});
+       const result = threeToCannon(this.planet, {type: ShapeType.SPHERE});
        this.body = new CANNON.Body({
            mass: this.parameters.mass,
            shape: result.shape,
