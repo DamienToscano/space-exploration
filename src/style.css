@@ -121,3 +121,36 @@ body {
     color: #0B1A30;
     text-decoration: none;
 }
+
+/****************
+    CONTROLS
+*****************/
+
+.controls {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    color: rgb(89, 91, 98);
+}
+
+.control-group {
+    display: flex;
+    justify-content: center;
+}
+
+.control {
+    border: solid 1px rgb(89, 91, 98);
+    height: 40px;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.1s ease-in-out;
+}
+
+.control-small {
+    width: 40px;
+}
