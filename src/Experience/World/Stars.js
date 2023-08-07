@@ -26,13 +26,13 @@ export default class Stars
 
     setPositions()
     {
-        this.particlesCount = 5000
+        this.particlesCount = this.size * this.size / 100
         this.positions = new Float32Array(this.particlesCount * 3)
 
         for (let i = 0; i < this.particlesCount; i++) {
-            this.positions[i * 3] = (Math.random() - 0.5) * this.size
-            this.positions[i * 3 + 1] = (Math.random() - 0.5) * this.size
-            this.positions[i * 3 + 2] = (Math.random() - 0.5) * this.size
+            this.positions[i * 3] = (Math.random() - 0.5) * this.size * 2
+            this.positions[i * 3 + 1] = (Math.random() - 0.5) * this.size * 2
+            this.positions[i * 3 + 2] = (Math.random() - 0.5) * this.size * 2
         }
     }
 
@@ -54,7 +54,7 @@ export default class Stars
             sizeAttenuation: true,
             depthWrite: false,
             blending: THREE.AdditiveBlending,
-            size: 1,
+            size: 2,
             transparent: true,
             map: this.textures.color,
         })
