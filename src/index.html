@@ -1,11 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space exploration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <canvas class="webgl"></canvas>
+    <section class="loader">
+        <div class="launch-button">
+            <!-- LAUNCH !!! -->
+            <span class="inactive">L</span>
+            <span class="inactive">A</span>
+            <span class="inactive">U</span>
+            <span class="inactive">N</span>
+            <span class="inactive">C</span>
+            <span class="inactive">H</span>
+            <span class="inactive"> </span>
+            <span class="inactive">!</span>
+        </div>
+    </section>
+    <div id="cockpit">
+        <div id="speed-container">
+            <div id="speedometer"></div>
+        </div>
+    </div>
+    <!-- Controls buttons -->
+    <div class="controls">
+        <div class="control-group">
+            <div class="control control-small" id="control-up"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
+                </svg>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="control control-small" id="control-left"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75" />
+                </svg>
+            </div>
+            <div class="control control-small" id="control-down"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
+                </svg>
+            </div>
+            <div class="control control-small" id="control-right"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
+                </svg>
+            </div>
+        </div>
+        <div class="control control-brake" id="control-brake">POWER (Shift)</div>
+    </div>
+    <div class="copyright"><a href="https://twitter.com/DamienToscano" target="_blank">© By Damien Toscano</a></div>
 </body>
+
 </html>

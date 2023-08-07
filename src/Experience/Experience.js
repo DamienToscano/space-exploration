@@ -8,8 +8,11 @@ import Camera from './Camera.js'
 import Renderer from './Renderer.js'
 import World from './World/World.js'
 import Resources from './Utils/Resources.js'
-
+import Loader from './World/Loader.js'
 import sources from './sources.js'
+import Physics from './Physics/World.js'
+import CannonDebugger from 'cannon-es-debugger'
+import Controls from './World/Controls.js'
 
 let instance = null
 
@@ -37,11 +40,17 @@ export default class Experience
         this.object = new Object()
         this.scene = new THREE.Scene()
         this.sources = sources
-        this.resources = new Resources(this.sources)
+        this.loader = new Loader()
+        this.resources = new Resources(this.sources, this.loader.getLoadingManager())
         this.camera = new Camera()
         this.renderer = new Renderer()
         this.world = new World()
+        this.physics = new Physics()
+        this.controls = new Controls()
 
+        // Cannon Debugger
+        // this.cannonDebugger = new CannonDebugger(this.scene, this.physics.world)
+        
         // Resize event
         this.sizes.on('resize', () =>
         {
@@ -64,8 +73,17 @@ export default class Experience
     update()
     {
         this.camera.update()
-        this.world.update()
-        this.renderer.update()
+
+        if (this.world)
+            this.world.update()
+
+        if (this.renderer)
+            this.renderer.update()
+
+        if (this.physics) {
+            this.physics.update()
+            // this.cannonDebugger.update()
+        }
     }
 
     destroy()

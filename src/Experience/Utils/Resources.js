@@ -4,12 +4,13 @@ import EventEmitter from "./EventEmitter.js"
 
 export default class Resources extends EventEmitter
 {
-    constructor(sources)
+    constructor(sources, loadingManager)
     {
         super()
         
         // Options
         this.sources = sources
+        this.loadingManager = loadingManager
         
         // Setup
         this.items = {}
@@ -24,9 +25,9 @@ export default class Resources extends EventEmitter
     setLoaders()
     {
         this.loaders = {}
-        this.loaders.gltfLoader = new GLTFLoader()
-        this.loaders.textureLoader = new THREE.TextureLoader()
-        this.loaders.cubeTextureLoader = new THREE.CubeTextureLoader()
+        this.loaders.gltfLoader = new GLTFLoader(this.loadingManager)
+        this.loaders.textureLoader = new THREE.TextureLoader(this.loadingManager)
+        this.loaders.cubeTextureLoader = new THREE.CubeTextureLoader(this.loadingManager)
     }
 
     startLoading()
