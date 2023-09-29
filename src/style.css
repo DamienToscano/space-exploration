@@ -99,6 +99,36 @@ body {
 }
 
 /****************
+    WARNING
+*****************/
+
+#warning-container {
+    position: fixed;
+    top: 20px;
+    color: #65FFDA;
+    width: 100%;
+    display: none;
+    justify-content: center;
+    font-size: xx-large;
+    /* Animate by pulsing opacity */
+    animation: pulse 1s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/****************
     COPTYRIGHT
 *****************/
 

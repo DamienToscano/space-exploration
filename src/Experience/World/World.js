@@ -7,7 +7,7 @@ import PlanetsData from '../Data/Planets.js'
 
 export default class World {
     parameters = {
-        size: 1000,
+        size: 3000,
     }
 
     constructor() {
@@ -57,7 +57,7 @@ export default class World {
           y = (Math.random() * this.parameters.size * 3) - this.parameters.size * 1.5;
           z = (Math.random() * this.parameters.size * 3) - this.parameters.size * 1.5;
           distance = Math.sqrt(x*x + y*y + z*z);
-        } while (distance < 1000);
+        } while (distance < this.parameters.size);
         return {x: x, y: y, z: z};
       }
 
