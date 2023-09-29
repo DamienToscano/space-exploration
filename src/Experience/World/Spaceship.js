@@ -44,8 +44,11 @@ export default class Spaceship {
         this.debug = this.experience.debug
         this.physics = this.experience.physics
         this.controls = this.experience.controls
+        this.world = this.experience.world
         // this.dom.turboJauge = document.querySelectorAll('.turbo-jauge-unit')
         this.dom.speedValue = document.querySelector('#speedometer')
+        this.dom.warning = document.querySelector('#warning-container')
+        this.warning_alert = false
         this.currentSpeed = this.parameters.cruiseSpeed
         this.angles = {
             x: 0, y: 0, z: 0
@@ -80,6 +83,8 @@ export default class Spaceship {
     setModel() {
         this.model = this.resources.items.spaceship
         this.spaceship = this.model.scene.children[0]
+        /* Allow future opacity change */
+        this.spaceship.material.transparent = true
         this.spaceship.position.copy(this.parameters.position)
         this.scene.add(this.spaceship)
 
@@ -238,6 +243,11 @@ export default class Spaceship {
         if (this.body.angularVelocity.z < - this.parameters.angularVelocityLimitY) {
             this.body.angularVelocity.z += 0.01
         }
+
+        /* Manage transparency when reset position after scene limit reached */
+        if (this.spaceship.material.opacity < 1) {
+            this.spaceship.material.opacity += 0.005
+        }
     }
 
     dataManagement() {
@@ -246,10 +256,36 @@ export default class Spaceship {
         *************************/
         this.dom.speedValue.textContent = Math.abs(this.body.velocity.z.toFixed(0))
         this.dom.speedValue.style.opacity = Math.abs(this.body.velocity.z.toFixed(0)) / 10 + 0.1
+
+        /************************
+            DISTANCE MANAGEMENT
+        *************************/
+
+        // Distance between the spaceship and origin
+        let distance = Math.sqrt(Math.pow(this.body.position.x, 2) + Math.pow(this.body.position.y, 2) + Math.pow(this.body.position.z, 2))
+
+        // If the spaceship is too far, we display a warning
+        if (distance > this.world.parameters.size) {
+            this.dom.warning.style.display = 'flex'
+            this.warning_alert = true
+
+            // If the spaceship is way too far, we reset the position
+            if (distance > this.world.parameters.size * 1.2) {
+                this.body.position.x = 0
+                this.body.position.y = 0
+                this.body.position.z = 0
+
+                /* Make it transparent */
+                this.spaceship.material.opacity = 0.1
+            }
+        } else if (this.warning_alert) {
+            this.dom.warning.style.display = 'none'
+            this.warning_alert = false
+        }
+
     }
 
     updateCamera() {
-
 
         if (this.controls.actions.left) {
             if (this.parameters.horizontal_offset < this.parameters.horizontal_offset_limit) {
@@ -269,8 +305,6 @@ export default class Spaceship {
                 this.parameters.horizontal_offset += 0.01
             }
         }
-
-        console.log(this.parameters.horizontal_offset)
 
         if (this.controls.actions.up) {
             if (this.parameters.vertical_offset > - this.parameters.vertical_offset_limit) {

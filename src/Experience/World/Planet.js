@@ -34,7 +34,6 @@ export default class Planet {
             Math.pow(this.parameters.position.y, 2) +
             Math.pow(this.parameters.position.z, 2)
         )
-        console.log(distanceToCenter)
     }
 
     setModel() {
