@@ -16,7 +16,7 @@ export default class Controls extends EventEmitter
         this.actions.right = false
         this.actions.down = false
         this.actions.left = false
-        this.actions.turbo = false
+        this.actions.fire = false
         this.actions.accelerate = false
     }
 
@@ -56,9 +56,9 @@ export default class Controls extends EventEmitter
                     this.trigger('accelerateStart')
                     break
 
-                case ' ':
-                    this.actions.turbo = true
-                    this.trigger('turboStart')
+                case 'w':
+                    this.actions.fire = true
+                    this.trigger('fireStart')
                     break
 
             }
@@ -93,10 +93,9 @@ export default class Controls extends EventEmitter
                     this.trigger('accelerateEnd')
                     break
 
-                case ' ':
-                    this.actions.turbo = false
-                    // Emit event for turbo end
-                    this.trigger('turboEnd')
+                case 'w':
+                    this.actions.fire = false
+                    this.trigger('fireEnd')
                     break
             }
         }

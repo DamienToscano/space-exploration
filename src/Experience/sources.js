@@ -145,4 +145,10 @@ export default [
         type: 'gltfModel',
         path: 'models/planets/rings.glb'
     },
+    /* SOUNDS */
+    {
+        name: 'pew',
+        type: 'audio',
+        path: 'sounds/pew.wav'
+    },
 ]

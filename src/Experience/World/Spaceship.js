@@ -32,12 +32,14 @@ export default class Spaceship {
         vertical_offset: 0,
         horizontal_offset_limit: 1,
         vertical_offset_limit: 1,
+        firing_delay: 150,
     }
 
     dom = {}
 
     constructor() {
         this.experience = new Experience()
+        this.time = this.experience.time
         this.camera = this.experience.camera
         this.scene = this.experience.scene
         this.resources = this.experience.resources
@@ -74,9 +76,17 @@ export default class Spaceship {
             this.debugFolder = this.debug.ui.addFolder('Stars')
         }
 
+        /* LASERS */
+        /* TODO: Add lasers : https://gitlab.com/LunakepioFR/flightsim */
+        this.firing = false
+        this.bullets = []
+        this.last_fire_time = 0
+
+        this.setAudio()
         this.setModel()
         this.setPhysics()
         this.setControls()
+
 
     }
 
@@ -103,6 +113,10 @@ export default class Spaceship {
         this.physics.spaceshipMaterial = new CANNON.Material('spaceshipMaterial')
     }
 
+    setAudio() {
+        this.camera.sound.setBuffer(this.resources.items.pew)
+    }
+
     setBody() {
         // Convert the THREE.Mesh to a CANNON.Body using three-to-cannon
         const result = threeToCannon(this.spaceship, { type: ShapeType.HULL });
@@ -125,12 +139,35 @@ export default class Spaceship {
         })
     }
 
-    setControls() {
+    playFireSound() {
+        this.camera.sound.isPlaying = false
+        this.camera.sound.play()
+    }
 
-        // Unactive turbo when space key is released
-        this.controls.on('turboEnd', () => {
-            this.parameters.turboAllowed = false
-        })
+    fire() {
+        // Create Bullet
+        console.log('create bullet')
+
+        /* TODO: Create a bullet class */
+
+        // Copy group position and quaternion for the bullet
+
+        // Translate Z on the bullet, see why ?
+
+        // Set a name for the bullet
+
+        // Play audio
+        this.playFireSound()
+
+        // Add bullet to the scene
+
+        // Add the bullet to the this.bullets array
+
+        // Create the body of the bullet
+
+    }
+
+    setControls() {
 
         // Acceleration
         this.controls.on('accelerateStart', () => {
@@ -182,6 +219,16 @@ export default class Spaceship {
             this.parameters.forceAxis.y = 0
             this.parameters.force.y = 0
         })
+
+        /* Lasers */
+        this.controls.on('fireStart', () => {
+            this.firing = true
+        })
+
+        this.controls.on('fireEnd', () => {
+            this.firing = false
+        })
+
     }
 
     updateSpaceship() {
@@ -336,6 +383,46 @@ export default class Spaceship {
         )
     }
 
+    /* TODO: LASERS */
+
+    updateBullets() {
+
+        // TODO: Pas sur que ça soit utile si jamais on gère bien les bullets en classe
+        // Parcourez chaque projectile dans le tableau
+        for (let i = 0; i < this.bullets.length; i++) {
+            // Obtenez la vitesse du projectile en fonction de sa direction
+            let speed = new THREE.Vector3(0, 0, -2);
+            speed.applyQuaternion(this.bullets[i].quaternion);
+
+            // Déplacez le projectile
+            this.bullets[i].position.add(speed);
+        }
+    }
+
+    fireManagement() {
+        if (this.firing) {
+
+            // Regulate the shoot ratio
+            if (this.time.elapsed - this.last_fire_time > this.parameters.firing_delay) {
+                this.fire()
+                this.last_fire_time = this.time.elapsed;
+            }
+        }
+
+        // TODO: Manage this from the bullet class
+        /* if (elapsedTime - lastFireTime > 3) {
+            //deleted all scene children with name bullet
+            for (let i = 0; i < scene.children.length; i++) {
+              if (scene.children[i].name.includes("bullet")) {
+                scene.remove(scene.children[i]);
+                objectsToUpdate.splice(i, 1);
+              }
+            }
+          } */
+    }
+
+
+
     update() {
 
         this.dataManagement()
@@ -345,6 +432,8 @@ export default class Spaceship {
         *************************/
 
         this.updateSpaceship()
+
+        this.fireManagement()
 
         /************************
             CAMERA
