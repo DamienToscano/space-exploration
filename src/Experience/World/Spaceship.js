@@ -34,6 +34,12 @@ export default class Spaceship {
         horizontal_offset_limit: 1,
         vertical_offset_limit: 1,
         firing_delay: 150,
+        cannons: {
+            up_left: {x: 2.04, y: 1.64, z: 0.5},
+            up_right: {x: -2.04, y: 1.64, z: 0.5},
+            down_left: {x: 2.04, y: 1.33, z: 0.33},
+            down_right: {x: -2.04, y: 1.33, z: 0.33},
+        },
     }
 
     dom = {}
@@ -84,6 +90,7 @@ export default class Spaceship {
 
         this.setAudio()
         this.setModel()
+        this.setCannons()
         this.setPhysics()
         this.setControls()
 
@@ -102,6 +109,25 @@ export default class Spaceship {
         // Rotate the camera 180° on the X axis to match the spaceship
         this.camera.instance.rotation.y = Math.PI
         this.spaceship.add(this.camera.instance)
+    }
+
+    setCannons() {
+        const geometry = new THREE.SphereGeometry(0.1, 4, 4)
+        const material = new THREE.MeshStandardMaterial({
+            color: 0x6E6E6E,
+        })
+
+        this.up_left_cannon = new THREE.Mesh(geometry, material)
+        this.up_right_cannon = new THREE.Mesh(geometry, material)
+        this.down_left_cannon = new THREE.Mesh(geometry, material)
+        this.down_right_cannon = new THREE.Mesh(geometry, material)
+
+        this.up_left_cannon.position.set(this.parameters.cannons.up_left.x, this.parameters.cannons.up_left.y, this.parameters.cannons.up_left.z)
+        this.up_right_cannon.position.set(this.parameters.cannons.up_right.x, this.parameters.cannons.up_right.y, this.parameters.cannons.up_right.z)
+        this.down_left_cannon.position.set(this.parameters.cannons.down_left.x, this.parameters.cannons.down_left.y, this.parameters.cannons.down_left.z)
+        this.down_right_cannon.position.set(this.parameters.cannons.down_right.x, this.parameters.cannons.down_right.y, this.parameters.cannons.down_right.z)
+
+        this.spaceship.add(this.up_left_cannon, this.up_right_cannon, this.down_left_cannon, this.down_right_cannon)
     }
 
     setPhysics() {
@@ -145,29 +171,23 @@ export default class Spaceship {
     }
 
     fire() {
-        // Create Bullet
-        console.log('create bullet')
+        // Calculate up left fire position
 
-        /* TODO: Create a bullet class */
-        let bullet = new Bullet()
-        bullet.setPosition(this.spaceship.position.x, this.spaceship.position.y, this.spaceship.position.z + 4)
+        // TODO: Le calcul ne fonctionn pas, voir pourquoi le getWorldPosition ne fonctionne pas sur le mesh ? 
+        let fire_position = new THREE.Vector3()
+        fire_position.copy(this.spaceship.position)
+        let cannon_offset = this.up_left_cannon.position
+        fire_position.add(cannon_offset)
+
+        // Create the bullet
+        let bullet = new Bullet(fire_position, this.body.velocity, this.body.quaternion)
+
+        // TODO: Continue for the three others bullets
+
         this.bullets.push(bullet)
 
-        // Copy group position and quaternion for the bullet
-
-        // Translate Z on the bullet, see why ?
-
-        // Set a name for the bullet
-
-        // Play audiowa
+        // Play audio
         this.playFireSound()
-
-        // Add bullet to the scene
-
-        // Add the bullet to the this.bullets array
-
-        // Create the body of the bullet
-
     }
 
     setControls() {
@@ -386,22 +406,6 @@ export default class Spaceship {
         )
     }
 
-    /* TODO: LASERS */
-
-    updateBullets() {
-
-        // TODO: Pas sur que ça soit utile si jamais on gère bien les bullets en classe
-        // Parcourez chaque projectile dans le tableau
-        for (let i = 0; i < this.bullets.length; i++) {
-            // Obtenez la vitesse du projectile en fonction de sa direction
-            let speed = new THREE.Vector3(0, 0, -2);
-            speed.applyQuaternion(this.bullets[i].quaternion);
-
-            // Déplacez le projectile
-            this.bullets[i].position.add(speed);
-        }
-    }
-
     fireManagement() {
         if (this.firing) {
 
@@ -411,18 +415,6 @@ export default class Spaceship {
                 this.last_fire_time = this.time.elapsed;
             }
         }
-
-        // TODO: Manage this from the bullet class
-        /* if (elapsedTime - lastFireTime > 3) {
-            //deleted all scene children with name bullet
-            for (let i = 0; i < scene.children.length; i++) {
-              if (scene.children[i].name.includes("bullet")) {
-                scene.remove(scene.children[i]);
-                objectsToUpdate.splice(i, 1);
-              }
-            }
-          } */
-
 
         // Update the bullets
         this.bullets.forEach((element, index) => {

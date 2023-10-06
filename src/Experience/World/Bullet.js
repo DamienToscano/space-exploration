@@ -11,24 +11,28 @@ export default class Bullet {
         radius: 0.3,
         mass: 0.1,
         position: { x: 0, y: 0, z: 0 },
+        force_power: 100,
     }
 
-    constructor() {
+    constructor(origin, velocity, quaternion) {
         this.experience = new Experience()
         this.time = this.experience.time
         this.scene = this.experience.scene
         this.physics = this.experience.physics
+        this.spaceship_position = origin
+        this.spaceship_velocity = velocity
+        this.spaceship_quaternion = quaternion
 
         this.instanciated_time = this.time.elapsed
 
         this.setGeometry()
         this.setMaterial()
+        this.setPosition()
         this.setMesh()
         this.setPhysics()
     }
 
     setGeometry() {
-        /* TODO: Passer ça en instance geometry */
         this.geometry = new THREE.SphereGeometry(this.parameters.radius, 4, 4)
     }
 
@@ -39,20 +43,21 @@ export default class Bullet {
     }
 
     setMesh() {
-        console.log('Setting the bullet model')
         this.mesh = new THREE.Mesh(this.geometry, this.material)
-
         this.scene.add(this.mesh)
     }
 
     setPhysics() {
-        console.log('Setting the bullet physics')
         this.setPhysicsMaterial()
         this.setBody()
     }
 
-    setPosition(x, y, z) {
-        this.body.position.set(x, y, z)
+    setPosition() {
+        this.parameters.position = {
+            x: this.spaceship_position.x,
+            y: this.spaceship_position.y,
+            z: this.spaceship_position.z
+        }
     }
 
     setPhysicsMaterial() {
@@ -68,21 +73,40 @@ export default class Bullet {
             material: this.physics.bulletMaterial,
         })
 
+        // TODO: Trouver le calcul pour placer le tir depuis un peu devant le vaisseau.
+        // TODO: Idée, placer 4 points d'origines juste devant le vaisseau dans le même groupe qui serviront de point de départs
+        // et répartir les tirs sur ces points de départ
+
+        // Set the original position
+        this.body.position.set(this.parameters.position.x, this.parameters.position.y, this.parameters.position.z)
+        // Set the velocity
+        this.body.velocity.set(this.spaceship_velocity.x, this.spaceship_velocity.y, this.spaceship_velocity.z)
+
+        // Fint the vector direction of the spaceship to calculate the force
+        const forward_vector = new CANNON.Vec3(0, 0, 1)
+        const rotated_direction_vector = new CANNON.Vec3()
+        this.spaceship_quaternion.vmult(forward_vector, rotated_direction_vector)
+
+        const bullet_force = new CANNON.Vec3(
+            rotated_direction_vector.x * this.parameters.force_power,
+            rotated_direction_vector.y * this.parameters.force_power,
+            rotated_direction_vector.z * this.parameters.force_power
+        );
+
+        // Apply the force to the bullet
+        this.body.applyForce(bullet_force, this.body.position)
+
         this.physics.world.addBody(this.body)
 
         this.physics.objectsToUpdate.push({
             mesh: this.mesh,
             body: this.body
         })
-
-        // TODO: Apply local impulse to body
     }
 
     update() {
         if ((this.time.elapsed - this.instanciated_time) > this.parameters.life_time) {
-            console.log('Destroying the bullet')
             this.destroy()
-
         }
     }
 
