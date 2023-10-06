@@ -2,6 +2,7 @@ import * as THREE from "three"
 import Experience from "../Experience.js"
 import * as CANNON from 'cannon-es'
 import { threeToCannon, ShapeType } from 'three-to-cannon';
+import Bullet from "./Bullet.js";
 
 export default class Spaceship {
     parameters = {
@@ -47,7 +48,6 @@ export default class Spaceship {
         this.physics = this.experience.physics
         this.controls = this.experience.controls
         this.world = this.experience.world
-        // this.dom.turboJauge = document.querySelectorAll('.turbo-jauge-unit')
         this.dom.speedValue = document.querySelector('#speedometer')
         this.dom.warning = document.querySelector('#warning-container')
         this.warning_alert = false
@@ -149,6 +149,9 @@ export default class Spaceship {
         console.log('create bullet')
 
         /* TODO: Create a bullet class */
+        let bullet = new Bullet()
+        bullet.setPosition(this.spaceship.position.x, this.spaceship.position.y, this.spaceship.position.z + 4)
+        this.bullets.push(bullet)
 
         // Copy group position and quaternion for the bullet
 
@@ -156,7 +159,7 @@ export default class Spaceship {
 
         // Set a name for the bullet
 
-        // Play audio
+        // Play audiowa
         this.playFireSound()
 
         // Add bullet to the scene
@@ -419,6 +422,15 @@ export default class Spaceship {
               }
             }
           } */
+
+
+        // Update the bullets
+        this.bullets.forEach((element, index) => {
+            /* If not alive, remove it from the bullets list */
+            if (! element.parameters.alive) {
+                this.bullets.splice(index, 1)
+            }
+        });
     }
 
 
@@ -440,5 +452,11 @@ export default class Spaceship {
         *************************/
 
         this.updateCamera()
+
+        if (this.bullets) {
+            for (let bullet of this.bullets) {
+                bullet.update()
+            }
+        }
     }
 }

@@ -51,7 +51,7 @@ export default class Controls extends EventEmitter
                     this.trigger('leftStart')
                     break
 
-                case 'Shift':
+                case 'a':
                     this.actions.accelerate = true
                     this.trigger('accelerateStart')
                     break
@@ -88,7 +88,7 @@ export default class Controls extends EventEmitter
                     this.trigger('leftEnd')
                     break
 
-                case 'Shift':
+                case 'a':
                     this.actions.accelerate = false
                     this.trigger('accelerateEnd')
                     break
