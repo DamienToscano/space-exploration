@@ -50,6 +50,7 @@ export default class Bullet {
     setPhysics() {
         this.setPhysicsMaterial()
         this.setBody()
+        this.setCollisionListener()
     }
 
     setPosition() {
@@ -72,10 +73,6 @@ export default class Bullet {
             shape: shape,
             material: this.physics.bulletMaterial,
         })
-
-        // TODO: Trouver le calcul pour placer le tir depuis un peu devant le vaisseau.
-        // TODO: Idée, placer 4 points d'origines juste devant le vaisseau dans le même groupe qui serviront de point de départs
-        // et répartir les tirs sur ces points de départ
 
         // Set the original position
         this.body.position.set(this.parameters.position.x, this.parameters.position.y, this.parameters.position.z)
@@ -104,6 +101,13 @@ export default class Bullet {
         })
     }
 
+    setCollisionListener() {
+        /* Use arrow function to keep context of Bullet as this */
+        this.body.addEventListener('collide', (event) => {
+            this.destroy()
+        });
+    }
+
     update() {
         if ((this.time.elapsed - this.instanciated_time) > this.parameters.life_time) {
             this.destroy()
@@ -111,6 +115,7 @@ export default class Bullet {
     }
 
     destroy() {
+        this.body.removeEventListener('collide')
         this.geometry.dispose()
         this.material.dispose()
         this.scene.remove(this.mesh)

@@ -90,8 +90,6 @@ export default class Spaceship {
         this.setCannons()
         this.setPhysics()
         this.setControls()
-
-
     }
 
     setModel() {
@@ -112,6 +110,8 @@ export default class Spaceship {
         const geometry = new THREE.SphereGeometry(0.1, 4, 4)
         const material = new THREE.MeshStandardMaterial({
             color: 0x6E6E6E,
+            transparent: true,
+            opacity: 0,
         })
 
         this.cannons = {}
