@@ -116,12 +116,11 @@ export default class Spaceship {
 
         this.cannons = {}
 
-        this.cannons.left = new THREE.Mesh(geometry, material)
-        this.cannons.right = new THREE.Mesh(geometry, material)
-
-        this.cannons.left.position.set(this.parameters.cannons.left.x, this.parameters.cannons.left.y, this.parameters.cannons.left.z)
-        this.cannons.right.position.set(this.parameters.cannons.right.x, this.parameters.cannons.right.y, this.parameters.cannons.right.z)
-        this.spaceship.add(this.cannons.left, this.cannons.right)
+        for (const [key, parameter] of Object.entries(this.parameters.cannons)) {
+            this.cannons[key] = new THREE.Mesh(geometry, material)
+            this.cannons[key].position.set(parameter.x, parameter.y, parameter.z)
+            this.spaceship.add(this.cannons[key])
+        }
     }
 
     setPhysics() {
