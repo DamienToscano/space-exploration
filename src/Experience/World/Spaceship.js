@@ -35,10 +35,8 @@ export default class Spaceship {
         vertical_offset_limit: 1,
         firing_delay: 150,
         cannons: {
-            up_left: {x: 2.04, y: 1.64, z: 0.5},
-            up_right: {x: -2.04, y: 1.64, z: 0.5},
-            down_left: {x: 2.04, y: 1.33, z: 0.33},
-            down_right: {x: -2.04, y: 1.33, z: 0.33},
+            left: {x: 2.2, y: 1, z: 10},
+            right: {x: -2.2, y: 1, z: 10},
         },
     }
 
@@ -82,8 +80,7 @@ export default class Spaceship {
             this.debugFolder = this.debug.ui.addFolder('Stars')
         }
 
-        /* LASERS */
-        /* TODO: Add lasers : https://gitlab.com/LunakepioFR/flightsim */
+        /* Cannons */
         this.firing = false
         this.bullets = []
         this.last_fire_time = 0
@@ -117,17 +114,14 @@ export default class Spaceship {
             color: 0x6E6E6E,
         })
 
-        this.up_left_cannon = new THREE.Mesh(geometry, material)
-        this.up_right_cannon = new THREE.Mesh(geometry, material)
-        this.down_left_cannon = new THREE.Mesh(geometry, material)
-        this.down_right_cannon = new THREE.Mesh(geometry, material)
+        this.cannons = {}
 
-        this.up_left_cannon.position.set(this.parameters.cannons.up_left.x, this.parameters.cannons.up_left.y, this.parameters.cannons.up_left.z)
-        this.up_right_cannon.position.set(this.parameters.cannons.up_right.x, this.parameters.cannons.up_right.y, this.parameters.cannons.up_right.z)
-        this.down_left_cannon.position.set(this.parameters.cannons.down_left.x, this.parameters.cannons.down_left.y, this.parameters.cannons.down_left.z)
-        this.down_right_cannon.position.set(this.parameters.cannons.down_right.x, this.parameters.cannons.down_right.y, this.parameters.cannons.down_right.z)
+        this.cannons.left = new THREE.Mesh(geometry, material)
+        this.cannons.right = new THREE.Mesh(geometry, material)
 
-        this.spaceship.add(this.up_left_cannon, this.up_right_cannon, this.down_left_cannon, this.down_right_cannon)
+        this.cannons.left.position.set(this.parameters.cannons.left.x, this.parameters.cannons.left.y, this.parameters.cannons.left.z)
+        this.cannons.right.position.set(this.parameters.cannons.right.x, this.parameters.cannons.right.y, this.parameters.cannons.right.z)
+        this.spaceship.add(this.cannons.left, this.cannons.right)
     }
 
     setPhysics() {
@@ -171,20 +165,16 @@ export default class Spaceship {
     }
 
     fire() {
-        // Calculate up left fire position
+        // Create bullets
+        for (const [key, cannon] of Object.entries(this.cannons)) {
+            // Get real world position
+            let world_position = new THREE.Vector3()
+            world_position.setFromMatrixPosition(cannon.matrixWorld)
 
-        // TODO: Le calcul ne fonctionn pas, voir pourquoi le getWorldPosition ne fonctionne pas sur le mesh ? 
-        let fire_position = new THREE.Vector3()
-        fire_position.copy(this.spaceship.position)
-        let cannon_offset = this.up_left_cannon.position
-        fire_position.add(cannon_offset)
-
-        // Create the bullet
-        let bullet = new Bullet(fire_position, this.body.velocity, this.body.quaternion)
-
-        // TODO: Continue for the three others bullets
-
-        this.bullets.push(bullet)
+            // Create new bullet
+            let bullet = new Bullet(world_position, this.body.velocity, this.body.quaternion)
+            this.bullets.push(bullet)
+        }
 
         // Play audio
         this.playFireSound()
