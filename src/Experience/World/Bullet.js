@@ -8,7 +8,7 @@ export default class Bullet {
         life_time: 3000,
         color: 0x84B3FF,
         alive: true,
-        radius: 0.3,
+        radius: 0.2,
         mass: 0.1,
         position: { x: 0, y: 0, z: 0 },
         force_power: 100,
