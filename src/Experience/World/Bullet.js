@@ -104,7 +104,9 @@ export default class Bullet {
     setCollisionListener() {
         /* Use arrow function to keep context of Bullet as this */
         this.body.addEventListener('collide', (event) => {
-            this.destroy()
+            if (event.body.material.name == 'asteroidMaterial') {
+                this.destroy()
+            }
         });
     }
 
