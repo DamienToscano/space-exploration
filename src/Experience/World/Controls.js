@@ -51,12 +51,12 @@ export default class Controls extends EventEmitter
                     this.trigger('leftStart')
                     break
 
-                case 'a':
+                case 's':
                     this.actions.accelerate = true
                     this.trigger('accelerateStart')
                     break
 
-                case 'w':
+                case 'd':
                     this.actions.fire = true
                     this.trigger('fireStart')
                     break
@@ -88,12 +88,12 @@ export default class Controls extends EventEmitter
                     this.trigger('leftEnd')
                     break
 
-                case 'a':
+                case 's':
                     this.actions.accelerate = false
                     this.trigger('accelerateEnd')
                     break
 
-                case 'w':
+                case 'd':
                     this.actions.fire = false
                     this.trigger('fireEnd')
                     break
@@ -103,6 +103,4 @@ export default class Controls extends EventEmitter
         document.addEventListener('keydown', this.keyboard.events.keyDown)
         document.addEventListener('keyup', this.keyboard.events.keyUp)
     }
-
-    // TODO: Make setTouch for mobile
 }

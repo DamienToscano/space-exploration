@@ -19,6 +19,7 @@ export default class Asteroid {
         this.physics = this.experience.physics
         this.size = this.experience.world.parameters.size / 2
         this.asteroids = this.experience.world.asteroids
+        this.body_has_to_be_destroy = false
 
         this.setModel()
         this.calculateDimensions()
@@ -114,5 +115,12 @@ export default class Asteroid {
         this.asteroid.geometry.dispose()
         this.asteroid.material.dispose()
         this.scene.remove(this.asteroid)
+        this.body_has_to_be_destroy = true
+    }
+
+    update() {
+        if (this.body_has_to_be_destroy) {
+            this.physics.world.removeBody(this.body)
+        }
     }
 }

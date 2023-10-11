@@ -24,6 +24,7 @@ export default class Bullet {
         this.spaceship_quaternion = quaternion
 
         this.instanciated_time = this.time.elapsed
+        this.body_has_to_be_destroy = false
 
         this.setGeometry()
         this.setMaterial()
@@ -66,7 +67,7 @@ export default class Bullet {
     }
 
     setBody() {
-        const shape = new CANNON.Sphere(this.parameters.radius / 2)
+        const shape = new CANNON.Sphere(this.parameters.radius)
 
         this.body = new CANNON.Body({
             mass: this.parameters.mass,
@@ -114,6 +115,10 @@ export default class Bullet {
         if ((this.time.elapsed - this.instanciated_time) > this.parameters.life_time) {
             this.destroy()
         }
+
+        if (this.body_has_to_be_destroy) {
+            this.physics.world.removeBody(this.body)
+        }
     }
 
     destroy() {
@@ -122,5 +127,6 @@ export default class Bullet {
         this.material.dispose()
         this.scene.remove(this.mesh)
         this.parameters.alive = false
+        this.body_has_to_be_destroy = true
     }
 }

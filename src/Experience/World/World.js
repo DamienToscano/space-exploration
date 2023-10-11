@@ -115,5 +115,12 @@ export default class World {
                 planet.update()
             }
         }
+
+        // Update asteroids
+        if (this.asteroids) {
+            for (let asteroid of this.asteroids) {
+                asteroid.update()
+            }
+        }
     }
 }
