@@ -26,7 +26,8 @@ export default class World {
             // Wait for resources if we have some to load the environment
             this.resources.on('ready', () => {
                 this.environment = new Environment()
-                this.createGalaxies()
+                // Galaxies disabled, not useful for the experience
+                // this.createGalaxies()
                 this.createPlanets()
                 this.createAsteroids()
                 this.spaceship = new Spaceship()
@@ -98,12 +99,13 @@ export default class World {
     }
 
     update() {
+        // Galaxy disabled, not useful for the experience
         // Update the galaxies
-        if (this.galaxies) {
-            for (let galaxy of this.galaxies) {
-                galaxy.update()
-            }
-        }
+        // if (this.galaxies) {
+        //     for (let galaxy of this.galaxies) {
+        //         galaxy.update()
+        //     }
+        // }
 
         if (this.spaceship) {
             this.spaceship.update()
