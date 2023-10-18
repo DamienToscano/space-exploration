@@ -10,7 +10,6 @@ export default class Asteroid {
     }
 
     constructor(id) {
-
         this.asteroid_number = id
         this.experience = new Experience()
         this.time = this.experience.time
@@ -20,6 +19,7 @@ export default class Asteroid {
         this.physics = this.experience.physics
         this.size = this.experience.world.parameters.size / 2
         this.asteroids = this.experience.world.asteroids
+        this.body_has_to_be_destroy = false
 
         this.setModel()
         this.calculateDimensions()
@@ -70,6 +70,7 @@ export default class Asteroid {
     setPhysics() {
         this.setMaterial()
         this.setBody()
+        this.setCollisionListener()
     }
 
     setMaterial() {
@@ -98,5 +99,28 @@ export default class Asteroid {
         // Apply local impulse to body
         this.body.applyLocalImpulse(new CANNON.Vec3(parseInt(Math.random() * 10), parseInt(Math.random() * 10), parseInt(Math.random() * 10)), new CANNON.Vec3(1, 2, 1))
 
+    }
+
+    setCollisionListener() {
+        /* Use arrow function to keep context of Bullet as this */
+        this.body.addEventListener('collide', (event) => {
+            if (event.body.material.name == 'bulletMaterial') {
+                this.destroy()
+            }
+        });
+    }
+
+    destroy() {
+        this.body.removeEventListener('collide')
+        this.asteroid.geometry.dispose()
+        this.asteroid.material.dispose()
+        this.scene.remove(this.asteroid)
+        this.body_has_to_be_destroy = true
+    }
+
+    update() {
+        if (this.body_has_to_be_destroy) {
+            this.physics.world.removeBody(this.body)
+        }
     }
 }

@@ -29,6 +29,9 @@ export default class Galaxy
 
     constructor(random = false)
     {
+
+        /* Galaxies disabled, not useful for the experience */
+
         this.experience = new Experience()
         this.scene = this.experience.scene
         this.resources = this.experience.resources

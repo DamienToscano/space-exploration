@@ -31,6 +31,7 @@ body {
     z-index: 100;
     transition: all 0.5s ease-in-out;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -57,10 +58,22 @@ body {
     margin-left: 20px;
 }
 
-/* Pour l'animation, changer la couleur lettre par lettre en JS selon la progression */
-
 .inactive {
     color: #0E2241;
+}
+
+.hidden {
+    display: none;
+}
+
+.mobile-alert-content {
+    margin: 26px;
+}
+
+.image-landing {
+    width: 460px;
+    max-width: 80%;
+    height: auto;
 }
 
 /****************
@@ -96,6 +109,36 @@ body {
     background-color: #0E2241;
     display: inline-block;
     margin: 0 2px;
+}
+
+/****************
+    WARNING
+*****************/
+
+#warning-container {
+    position: fixed;
+    top: 20px;
+    color: #65FFDA;
+    width: 100%;
+    display: none;
+    justify-content: center;
+    font-size: xx-large;
+    /* Animate by pulsing opacity */
+    animation: pulse 1s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
 
 /****************
@@ -153,4 +196,9 @@ body {
 
 .control-small {
     width: 40px;
+}
+
+.controls .active {
+    background-color: #65FFDA;
+    color: #0B1A30;
 }

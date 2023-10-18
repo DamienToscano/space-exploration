@@ -2,6 +2,7 @@ import * as THREE from "three"
 import Experience from "../Experience.js"
 import * as CANNON from 'cannon-es'
 import { threeToCannon, ShapeType } from 'three-to-cannon';
+import Bullet from "./Bullet.js";
 
 export default class Spaceship {
     parameters = {
@@ -32,20 +33,28 @@ export default class Spaceship {
         vertical_offset: 0,
         horizontal_offset_limit: 1,
         vertical_offset_limit: 1,
+        firing_delay: 150,
+        cannons: {
+            left: {x: 2.2, y: 1, z: 10},
+            right: {x: -2.2, y: 1, z: 10},
+        },
     }
 
     dom = {}
 
     constructor() {
         this.experience = new Experience()
+        this.time = this.experience.time
         this.camera = this.experience.camera
         this.scene = this.experience.scene
         this.resources = this.experience.resources
         this.debug = this.experience.debug
         this.physics = this.experience.physics
         this.controls = this.experience.controls
-        // this.dom.turboJauge = document.querySelectorAll('.turbo-jauge-unit')
+        this.world = this.experience.world
         this.dom.speedValue = document.querySelector('#speedometer')
+        this.dom.warning = document.querySelector('#warning-container')
+        this.warning_alert = false
         this.currentSpeed = this.parameters.cruiseSpeed
         this.angles = {
             x: 0, y: 0, z: 0
@@ -71,15 +80,23 @@ export default class Spaceship {
             this.debugFolder = this.debug.ui.addFolder('Stars')
         }
 
+        /* Cannons */
+        this.firing = false
+        this.bullets = []
+        this.last_fire_time = 0
+
+        this.setAudio()
         this.setModel()
+        this.setCannons()
         this.setPhysics()
         this.setControls()
-
     }
 
     setModel() {
         this.model = this.resources.items.spaceship
         this.spaceship = this.model.scene.children[0]
+        /* Allow future opacity change */
+        this.spaceship.material.transparent = true
         this.spaceship.position.copy(this.parameters.position)
         this.scene.add(this.spaceship)
 
@@ -89,6 +106,23 @@ export default class Spaceship {
         this.spaceship.add(this.camera.instance)
     }
 
+    setCannons() {
+        const geometry = new THREE.SphereGeometry(0.1, 4, 4)
+        const material = new THREE.MeshStandardMaterial({
+            color: 0x6E6E6E,
+            transparent: true,
+            opacity: 0,
+        })
+
+        this.cannons = {}
+
+        for (const [key, parameter] of Object.entries(this.parameters.cannons)) {
+            this.cannons[key] = new THREE.Mesh(geometry, material)
+            this.cannons[key].position.set(parameter.x, parameter.y, parameter.z)
+            this.spaceship.add(this.cannons[key])
+        }
+    }
+
     setPhysics() {
         this.setMaterial()
         this.setBody()
@@ -96,6 +130,10 @@ export default class Spaceship {
 
     setMaterial() {
         this.physics.spaceshipMaterial = new CANNON.Material('spaceshipMaterial')
+    }
+
+    setAudio() {
+        this.camera.sound.setBuffer(this.resources.items.pew)
     }
 
     setBody() {
@@ -120,12 +158,28 @@ export default class Spaceship {
         })
     }
 
-    setControls() {
+    playFireSound() {
+        this.camera.sound.isPlaying = false
+        this.camera.sound.play()
+    }
 
-        // Unactive turbo when space key is released
-        this.controls.on('turboEnd', () => {
-            this.parameters.turboAllowed = false
-        })
+    fire() {
+        // Create bullets
+        for (const [key, cannon] of Object.entries(this.cannons)) {
+            // Get real world position
+            let world_position = new THREE.Vector3()
+            world_position.setFromMatrixPosition(cannon.matrixWorld)
+
+            // Create new bullet
+            let bullet = new Bullet(world_position, this.body.velocity, this.body.quaternion)
+            this.bullets.push(bullet)
+        }
+
+        // Play audio
+        this.playFireSound()
+    }
+
+    setControls() {
 
         // Acceleration
         this.controls.on('accelerateStart', () => {
@@ -177,6 +231,16 @@ export default class Spaceship {
             this.parameters.forceAxis.y = 0
             this.parameters.force.y = 0
         })
+
+        /* Lasers */
+        this.controls.on('fireStart', () => {
+            this.firing = true
+        })
+
+        this.controls.on('fireEnd', () => {
+            this.firing = false
+        })
+
     }
 
     updateSpaceship() {
@@ -238,6 +302,11 @@ export default class Spaceship {
         if (this.body.angularVelocity.z < - this.parameters.angularVelocityLimitY) {
             this.body.angularVelocity.z += 0.01
         }
+
+        /* Manage transparency when reset position after scene limit reached */
+        if (this.spaceship.material.opacity < 1) {
+            this.spaceship.material.opacity += 0.005
+        }
     }
 
     dataManagement() {
@@ -246,10 +315,36 @@ export default class Spaceship {
         *************************/
         this.dom.speedValue.textContent = Math.abs(this.body.velocity.z.toFixed(0))
         this.dom.speedValue.style.opacity = Math.abs(this.body.velocity.z.toFixed(0)) / 10 + 0.1
+
+        /************************
+            DISTANCE MANAGEMENT
+        *************************/
+
+        // Distance between the spaceship and origin
+        let distance = Math.sqrt(Math.pow(this.body.position.x, 2) + Math.pow(this.body.position.y, 2) + Math.pow(this.body.position.z, 2))
+
+        // If the spaceship is too far, we display a warning
+        if (distance > this.world.parameters.size) {
+            this.dom.warning.style.display = 'flex'
+            this.warning_alert = true
+
+            // If the spaceship is way too far, we reset the position
+            if (distance > this.world.parameters.size * 1.2) {
+                this.body.position.x = 0
+                this.body.position.y = 0
+                this.body.position.z = 0
+
+                /* Make it transparent */
+                this.spaceship.material.opacity = 0.1
+            }
+        } else if (this.warning_alert) {
+            this.dom.warning.style.display = 'none'
+            this.warning_alert = false
+        }
+
     }
 
     updateCamera() {
-
 
         if (this.controls.actions.left) {
             if (this.parameters.horizontal_offset < this.parameters.horizontal_offset_limit) {
@@ -269,8 +364,6 @@ export default class Spaceship {
                 this.parameters.horizontal_offset += 0.01
             }
         }
-
-        console.log(this.parameters.horizontal_offset)
 
         if (this.controls.actions.up) {
             if (this.parameters.vertical_offset > - this.parameters.vertical_offset_limit) {
@@ -302,6 +395,27 @@ export default class Spaceship {
         )
     }
 
+    fireManagement() {
+        if (this.firing) {
+
+            // Regulate the shoot ratio
+            if (this.time.elapsed - this.last_fire_time > this.parameters.firing_delay) {
+                this.fire()
+                this.last_fire_time = this.time.elapsed;
+            }
+        }
+
+        // Update the bullets
+        this.bullets.forEach((element, index) => {
+            /* If not alive, remove it from the bullets list */
+            if (! element.parameters.alive) {
+                this.bullets.splice(index, 1)
+            }
+        });
+    }
+
+
+
     update() {
 
         this.dataManagement()
@@ -312,10 +426,18 @@ export default class Spaceship {
 
         this.updateSpaceship()
 
+        this.fireManagement()
+
         /************************
             CAMERA
         *************************/
 
         this.updateCamera()
+
+        if (this.bullets) {
+            for (let bullet of this.bullets) {
+                bullet.update()
+            }
+        }
     }
 }

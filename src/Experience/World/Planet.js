@@ -24,10 +24,16 @@ export default class Planet {
 
     setPosition() {
         this.parameters.position = {
-            x: (Math.random() - 0.5) * this.world_size * 2,
-            y: (Math.random() - 0.5) * this.world_size * 2,
-            z: (Math.random() - 0.5) * this.world_size * 2,
+            x: (Math.random() - 0.5) * this.world_size * 2.5,
+            y: (Math.random() - 0.5) * this.world_size * 2.5,
+            z: (Math.random() - 0.5) * this.world_size * 2.5,
         }
+
+        let distanceToCenter = Math.sqrt(
+            Math.pow(this.parameters.position.x, 2) +
+            Math.pow(this.parameters.position.y, 2) +
+            Math.pow(this.parameters.position.z, 2)
+        )
     }
 
     setModel() {

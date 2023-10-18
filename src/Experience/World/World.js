@@ -7,7 +7,7 @@ import PlanetsData from '../Data/Planets.js'
 
 export default class World {
     parameters = {
-        size: 1000,
+        size: 3000,
     }
 
     constructor() {
@@ -26,7 +26,8 @@ export default class World {
             // Wait for resources if we have some to load the environment
             this.resources.on('ready', () => {
                 this.environment = new Environment()
-                this.createGalaxies()
+                // Galaxies disabled, not useful for the experience
+                // this.createGalaxies()
                 this.createPlanets()
                 this.createAsteroids()
                 this.spaceship = new Spaceship()
@@ -57,7 +58,7 @@ export default class World {
           y = (Math.random() * this.parameters.size * 3) - this.parameters.size * 1.5;
           z = (Math.random() * this.parameters.size * 3) - this.parameters.size * 1.5;
           distance = Math.sqrt(x*x + y*y + z*z);
-        } while (distance < 1000);
+        } while (distance < this.parameters.size);
         return {x: x, y: y, z: z};
       }
 
@@ -98,12 +99,13 @@ export default class World {
     }
 
     update() {
+        // Galaxy disabled, not useful for the experience
         // Update the galaxies
-        if (this.galaxies) {
-            for (let galaxy of this.galaxies) {
-                galaxy.update()
-            }
-        }
+        // if (this.galaxies) {
+        //     for (let galaxy of this.galaxies) {
+        //         galaxy.update()
+        //     }
+        // }
 
         if (this.spaceship) {
             this.spaceship.update()
@@ -113,6 +115,13 @@ export default class World {
         if (this.planets) {
             for (let planet of this.planets) {
                 planet.update()
+            }
+        }
+
+        // Update asteroids
+        if (this.asteroids) {
+            for (let asteroid of this.asteroids) {
+                asteroid.update()
             }
         }
     }

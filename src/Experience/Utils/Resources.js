@@ -28,6 +28,7 @@ export default class Resources extends EventEmitter
         this.loaders.gltfLoader = new GLTFLoader(this.loadingManager)
         this.loaders.textureLoader = new THREE.TextureLoader(this.loadingManager)
         this.loaders.cubeTextureLoader = new THREE.CubeTextureLoader(this.loadingManager)
+        this.loaders.audioLoader = new THREE.AudioLoader(this.loadingManager)
     }
 
     startLoading()
@@ -57,6 +58,14 @@ export default class Resources extends EventEmitter
                     break;
                 case 'cubeTexture':
                     this.loaders.cubeTextureLoader.load(
+                        source.path,
+                        (file) =>
+                        {
+                            this.sourceLoaded(source, file)
+                        }
+                    )
+                case 'audio':
+                    this.loaders.audioLoader.load(
                         source.path,
                         (file) =>
                         {
