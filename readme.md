@@ -1,7 +1,7 @@
 # Space exploration
 
 <p float="left">
-    <img style="width: 48%;" src="https://github.com/DamienToscano/space-exploration/blob/develop/art/space_landing.jpeg?raw=true">
+    <img style="width: 48%;" src="https://github.com/DamienToscano/space-exploration/blob/develop/art/space_landing.png?raw=true">
     <img style="width: 48%;" src="https://github.com/DamienToscano/space-exploration/blob/develop/art/snapshot.png?raw=true">
 </p>
 
