@@ -57,10 +57,16 @@ body {
     margin-left: 20px;
 }
 
-/* Pour l'animation, changer la couleur lettre par lettre en JS selon la progression */
-
 .inactive {
     color: #0E2241;
+}
+
+.hidden {
+    display: none;
+}
+
+.mobile-alert-content {
+    margin: 26px;
 }
 
 /****************
@@ -183,4 +189,9 @@ body {
 
 .control-small {
     width: 40px;
+}
+
+.controls .active {
+    background-color: #65FFDA;
+    color: #0B1A30;
 }
