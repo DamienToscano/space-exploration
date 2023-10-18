@@ -13,7 +13,7 @@
 <body>
     <canvas class="webgl"></canvas>
     <section class="loader">
-        <div class="launch-button">
+        <div id="launch-button" class="launch-button">
             <!-- LAUNCH !!! -->
             <span class="inactive">L</span>
             <span class="inactive">A</span>
@@ -23,6 +23,12 @@
             <span class="inactive">H</span>
             <span class="inactive"> </span>
             <span class="inactive">!</span>
+        </div>
+        <!-- Style that -->
+        <div id="mobile-alert" class="mobile-alert hidden">
+            <div class="mobile-alert-content">This experience is not available on mobile devices. Please go to a
+                desktop computer.
+            </div>
         </div>
     </section>
     <div id="cockpit">
@@ -63,7 +69,8 @@
                 </svg>
             </div>
         </div>
-        <div class="control control-brake" id="control-brake">POWER (Shift)</div>
+        <div class="control control-big" id="control-accelerate">POWER (S)</div>
+        <div class="control control-big" id="control-fire">PEW PEW (D)</div>
     </div>
     <div class="copyright"><a href="https://twitter.com/DamienToscano" target="_blank">© By Damien Toscano</a></div>
 </body>

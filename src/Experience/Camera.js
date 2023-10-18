@@ -14,6 +14,7 @@ export default class Camera
 
         this.setInstance()
         this.setControls()
+        this.setAudioListener()
     }
 
     setInstance()
@@ -27,6 +28,14 @@ export default class Camera
     {
         // this.controls = new OrbitControls(this.instance, this.canvas)
         // this.controls.enableDamping = true
+    }
+
+    setAudioListener()
+    {
+        const listener = new THREE.AudioListener();
+        this.instance.add(listener)
+
+        this.sound = new THREE.Audio(listener);
     }
 
     resize()
